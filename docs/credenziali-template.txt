@@ -1,0 +1,37 @@
+═══════════════════════════════════════════════════════════
+              DIARIO DI BORDO — ACCESSI
+═══════════════════════════════════════════════════════════
+
+Indirizzo web:
+  https://___________________________________.netlify.app
+
+
+AMMINISTRAZIONE (per gestire utenti e correggere contributi)
+  Username: admin
+  Password: ___________________________
+
+
+Consegnato il: ______ / ______ / __________
+
+Consegnato a:  _________________________________
+
+
+───────────────────────────────────────────────────────────
+NOTE
+───────────────────────────────────────────────────────────
+
+- Questa password è l'unica che ti permette di creare e
+  modificare gli account degli educatori. Conservala in un
+  posto sicuro.
+
+- Se la perdi: lo sviluppatore può resettarla in 1 minuto
+  dalla dashboard del servizio.
+
+- Le password degli educatori NON le scegli tu in anticipo:
+  li crei dalla sezione "Gestisci utenti" e assegni la
+  password a ciascuno al momento della creazione.
+
+- Conserva questo foglio in luogo non accessibile ai
+  ragazzi/utenti della comunità.
+
+═══════════════════════════════════════════════════════════

@@ -1,0 +1,175 @@
+import { useRef, useState } from "react";
+import imageCompression from "browser-image-compression";
+import { uploadToCloudinary } from "@/lib/cloudinary";
+import { IMAGE_EXTENSIONS, validateFile } from "@/lib/mediaValidation";
+import { useToast } from "@/hooks/useToast";
+import type { MediaItem } from "@/types";
+
+type Pending = {
+  localId: number;
+  name: string;
+  progress: number;
+  error: string | null;
+};
+
+let nextLocalId = 1;
+
+const COMPRESSION_OPTIONS = {
+  maxSizeMB: 2,
+  maxWidthOrHeight: 1920,
+  useWebWorker: true,
+  initialQuality: 0.85,
+};
+
+export function MediaUploader({
+  value,
+  onChange,
+  diaryDate,
+}: {
+  value: MediaItem[];
+  onChange: (next: MediaItem[]) => void;
+  diaryDate: string;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [pending, setPending] = useState<Pending[]>([]);
+  const { push } = useToast();
+
+  function pickFiles() {
+    inputRef.current?.click();
+  }
+
+  async function handleFiles(files: FileList | null) {
+    if (!files || files.length === 0) return;
+    const arr = Array.from(files);
+    if (inputRef.current) inputRef.current.value = "";
+
+    for (const file of arr) {
+      const validation = await validateFile(file);
+      if (!validation.ok) {
+        push(`${file.name}: ${validation.reason}`, "error");
+        continue;
+      }
+
+      const localId = nextLocalId++;
+      setPending((p) => [...p, { localId, name: file.name, progress: 0, error: null }]);
+
+      try {
+        let toUpload: File | Blob = file;
+        if (IMAGE_EXTENSIONS.has(validation.ext)) {
+          toUpload = await imageCompression(file, COMPRESSION_OPTIONS);
+        }
+        const folder = folderFromDate(diaryDate);
+        const result = await uploadToCloudinary(toUpload, folder, (pct) => {
+          setPending((p) =>
+            p.map((it) => (it.localId === localId ? { ...it, progress: pct } : it)),
+          );
+        });
+        onChange([...value, result]);
+        setPending((p) => p.filter((it) => it.localId !== localId));
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : "Errore sconosciuto";
+        setPending((p) =>
+          p.map((it) => (it.localId === localId ? { ...it, error: msg } : it)),
+        );
+        push(`${file.name}: upload fallito (${msg})`, "error");
+      }
+    }
+  }
+
+  function removeAt(index: number) {
+    const next = value.slice();
+    next.splice(index, 1);
+    onChange(next);
+  }
+
+  function clearPendingError(localId: number) {
+    setPending((p) => p.filter((it) => it.localId !== localId));
+  }
+
+  return (
+    <div className="space-y-3">
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp,image/heic,image/heif,video/mp4,video/quicktime"
+        multiple
+        onChange={(e) => handleFiles(e.target.files)}
+        className="hidden"
+      />
+      <button
+        type="button"
+        onClick={pickFiles}
+        className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-300 bg-white px-4 py-6 text-sm text-slate-600 hover:border-slate-400 hover:bg-slate-50"
+      >
+        + Aggiungi foto o video
+      </button>
+
+      {(value.length > 0 || pending.length > 0) && (
+        <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {value.map((item, idx) => (
+            <li
+              key={item.public_id}
+              className="relative overflow-hidden rounded-lg border border-slate-200 bg-slate-100"
+            >
+              <div className="aspect-square">
+                <img
+                  src={item.type === "image" ? item.url : item.thumbnail}
+                  alt=""
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              {item.type === "video" && (
+                <span className="absolute bottom-1 left-1 rounded bg-black/60 px-1.5 py-0.5 text-[10px] text-white">
+                  ▶ {Math.round(item.duration)}s
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={() => removeAt(idx)}
+                aria-label="Rimuovi media"
+                className="absolute right-1 top-1 rounded-full bg-black/70 px-2 py-0.5 text-xs text-white hover:bg-black"
+              >
+                ✕
+              </button>
+            </li>
+          ))}
+          {pending.map((p) => (
+            <li
+              key={p.localId}
+              className="flex aspect-square flex-col items-center justify-center gap-2 rounded-lg border border-slate-200 bg-slate-50 p-2 text-center text-xs text-slate-600"
+            >
+              <p className="truncate w-full" title={p.name}>{p.name}</p>
+              {p.error ? (
+                <>
+                  <p className="text-red-600">{p.error}</p>
+                  <button
+                    type="button"
+                    onClick={() => clearPendingError(p.localId)}
+                    className="text-slate-500 underline"
+                  >
+                    rimuovi
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200">
+                    <div
+                      className="h-full bg-slate-900 transition-all"
+                      style={{ width: `${p.progress}%` }}
+                    />
+                  </div>
+                  <p>{p.progress}%</p>
+                </>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function folderFromDate(diaryDate: string): string {
+  const [yyyy, mm] = diaryDate.split("-");
+  return `diario/${yyyy}/${mm}`;
+}

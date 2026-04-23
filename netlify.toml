@@ -1,0 +1,13 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# SPA fallback: qualsiasi path non statico → index.html
+# Il router React Router gestisce la route lato client.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
