@@ -2,14 +2,14 @@ export function Skeleton({ className = "" }: { className?: string }) {
   return (
     <div
       aria-hidden="true"
-      className={`animate-pulse rounded-md bg-slate-200 ${className}`}
+      className={`animate-pulse rounded-md bg-surface-3 ${className}`}
     />
   );
 }
 
 export function CardSkeleton() {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div className="rounded-2xl border border-hairline bg-surface p-4 shadow-card">
       <div className="flex items-baseline justify-between gap-3">
         <Skeleton className="h-4 w-24" />
         <Skeleton className="h-3 w-10" />
@@ -40,14 +40,14 @@ export function TableSkeleton({
 }) {
   return (
     <div
-      className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
+      className="overflow-hidden rounded-xl border border-hairline bg-surface shadow-card"
       role="status"
       aria-label="Caricamento tabella"
     >
       <table className="w-full text-sm">
         <tbody>
           {Array.from({ length: rows }, (_, r) => (
-            <tr key={r} className="border-b border-slate-100 last:border-0">
+            <tr key={r} className="border-b border-hairline last:border-0">
               {Array.from({ length: columns }, (__, c) => (
                 <td key={c} className="px-4 py-3">
                   <Skeleton className="h-3 w-full" />

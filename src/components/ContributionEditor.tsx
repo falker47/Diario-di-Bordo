@@ -81,7 +81,7 @@ export function ContributionEditor({
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
-        <label className="block text-sm font-medium text-slate-700">
+        <label className="block text-sm font-medium text-primary">
           Data del contributo
           <input
             type="date"
@@ -89,16 +89,16 @@ export function ContributionEditor({
             min={minDate}
             max={today}
             onChange={(e) => setDiaryDate(e.target.value)}
-            className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
+            className="mt-1 block w-full rounded-lg border border-hairline-strong bg-surface px-3 py-2 text-sm text-primary shadow-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
           />
         </label>
-        <p className="mt-1 text-xs text-slate-500">
+        <p className="mt-1 text-xs text-muted">
           Puoi scegliere oggi o una data passata (entro 2 anni).
         </p>
       </div>
 
       <fieldset>
-        <legend className="text-sm font-medium text-slate-700">Sezione</legend>
+        <legend className="text-sm font-medium text-primary">Sezione</legend>
         <div className="mt-2 grid grid-cols-3 gap-2">
           {SECTIONS.map((s) => (
             <label
@@ -106,8 +106,8 @@ export function ContributionEditor({
               className={[
                 "flex cursor-pointer items-center justify-center rounded-lg border px-3 py-2 text-sm transition-colors",
                 section === s
-                  ? "border-slate-900 bg-slate-900 text-white"
-                  : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50",
+                  ? "border-inverted bg-inverted text-on-inverted"
+                  : "border-hairline-strong bg-surface text-secondary hover:bg-surface-2",
               ].join(" ")}
             >
               <input
@@ -125,28 +125,28 @@ export function ContributionEditor({
       </fieldset>
 
       <div>
-        <label className="block text-sm font-medium text-slate-700">
+        <label className="block text-sm font-medium text-primary">
           Testo
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
             rows={6}
             placeholder="Cosa è successo oggi?"
-            className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
+            className="mt-1 block w-full rounded-lg border border-hairline-strong bg-surface px-3 py-2 text-sm text-primary placeholder:text-subtle shadow-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
           />
         </label>
       </div>
 
       <div>
-        <p className="text-sm font-medium text-slate-700">Foto e video</p>
-        <p className="mb-2 text-xs text-slate-500">
+        <p className="text-sm font-medium text-primary">Foto e video</p>
+        <p className="mb-2 text-xs text-muted">
           Formati: JPG, PNG, WEBP, HEIC, MP4, MOV. Max 50 MB. Video max 60 secondi.
         </p>
         <MediaUploader value={media} onChange={setMedia} diaryDate={diaryDate} />
       </div>
 
       {formError && (
-        <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <div role="alert" className="rounded-xl border border-red-300/60 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300">
           {formError}
         </div>
       )}
@@ -154,14 +154,14 @@ export function ContributionEditor({
       <div className="flex items-center justify-between gap-3">
         <Link
           to={cancelTo}
-          className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-100"
+          className="rounded-lg border border-hairline-strong bg-surface px-4 py-2 text-sm font-medium text-secondary shadow-sm hover:bg-surface-2"
         >
           Annulla
         </Link>
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
+          className="rounded-lg bg-inverted px-4 py-2 text-sm font-medium text-on-inverted shadow-sm hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {submitting ? "Salvataggio…" : submitLabel}
         </button>

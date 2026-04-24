@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function AdminShell({ children }: { children: ReactNode }) {
   const { profile, isSuperadmin, signOut } = useAuth();
@@ -16,21 +17,22 @@ export function AdminShell({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="border-b border-slate-200 bg-white">
+    <div className="min-h-screen bg-app">
+      <header className="border-b border-hairline bg-surface/80 backdrop-blur">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-3">
           <Link
             to={isSuperadmin ? "/superadmin" : "/admin"}
-            className="text-base font-semibold text-slate-800"
+            className="text-base font-semibold text-primary"
           >
             Diario di Bordo · Area riservata
           </Link>
-          <div className="flex items-center gap-3 text-sm">
-            <span className="hidden text-slate-600 sm:inline">{displayName}</span>
+          <div className="flex items-center gap-2 text-sm">
+            <ThemeToggle />
+            <span className="hidden text-secondary sm:inline">{displayName}</span>
             <button
               type="button"
               onClick={handleLogout}
-              className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-medium text-slate-700 shadow-sm hover:bg-slate-100"
+              className="rounded-lg border border-hairline-strong bg-surface px-3 py-1.5 font-medium text-secondary shadow-sm hover:bg-surface-2"
             >
               Esci
             </button>

@@ -32,7 +32,7 @@ export function ViewSwitcher({ anchor }: { anchor: Anchor }) {
   return (
     <div
       role="tablist"
-      className="inline-flex items-center rounded-full border border-slate-200 bg-white p-1 shadow-sm"
+      className="inline-flex items-center rounded-full border border-hairline bg-surface p-1 shadow-card"
     >
       {items.map((item) => (
         <NavLink
@@ -42,8 +42,8 @@ export function ViewSwitcher({ anchor }: { anchor: Anchor }) {
             [
               "rounded-full px-3 py-1.5 text-sm transition-colors",
               isActive
-                ? "bg-slate-900 text-white"
-                : "text-slate-600 hover:bg-slate-100",
+                ? "bg-inverted text-on-inverted"
+                : "text-secondary hover:bg-surface-2",
             ].join(" ")
           }
         >

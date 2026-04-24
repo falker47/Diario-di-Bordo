@@ -63,18 +63,18 @@ type BreadcrumbProps = {
 export function Breadcrumb({ level, value }: BreadcrumbProps) {
   const crumbs = buildCrumbs(level, value);
   return (
-    <nav aria-label="Percorso" className="flex items-center gap-1 text-sm text-slate-500">
+    <nav aria-label="Percorso" className="flex items-center gap-1 text-sm text-muted">
       {crumbs.map((crumb, i) => {
         const isLast = i === crumbs.length - 1;
         return (
           <span key={crumb.to} className="flex items-center gap-1">
             {i > 0 && <span aria-hidden="true">›</span>}
             {isLast ? (
-              <span className="font-medium text-slate-700">{crumb.label}</span>
+              <span className="font-medium text-primary">{crumb.label}</span>
             ) : (
               <Link
                 to={crumb.to}
-                className="rounded px-1 hover:bg-slate-100 hover:text-slate-700"
+                className="rounded px-1 hover:bg-surface-2 hover:text-primary"
               >
                 {crumb.label}
               </Link>

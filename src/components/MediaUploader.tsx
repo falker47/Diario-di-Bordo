@@ -99,7 +99,7 @@ export function MediaUploader({
       <button
         type="button"
         onClick={pickFiles}
-        className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-300 bg-white px-4 py-6 text-sm text-slate-600 hover:border-slate-400 hover:bg-slate-50"
+        className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-hairline-strong bg-surface px-4 py-6 text-sm text-secondary hover:border-accent/60 hover:bg-surface-2"
       >
         + Aggiungi foto o video
       </button>
@@ -109,7 +109,7 @@ export function MediaUploader({
           {value.map((item, idx) => (
             <li
               key={item.public_id}
-              className="relative overflow-hidden rounded-lg border border-slate-200 bg-slate-100"
+              className="relative overflow-hidden rounded-lg border border-hairline bg-surface-2"
             >
               <div className="aspect-square">
                 <img
@@ -136,25 +136,25 @@ export function MediaUploader({
           {pending.map((p) => (
             <li
               key={p.localId}
-              className="flex aspect-square flex-col items-center justify-center gap-2 rounded-lg border border-slate-200 bg-slate-50 p-2 text-center text-xs text-slate-600"
+              className="flex aspect-square flex-col items-center justify-center gap-2 rounded-lg border border-hairline bg-surface-2 p-2 text-center text-xs text-secondary"
             >
               <p className="truncate w-full" title={p.name}>{p.name}</p>
               {p.error ? (
                 <>
-                  <p className="text-red-600">{p.error}</p>
+                  <p className="text-red-600 dark:text-red-400">{p.error}</p>
                   <button
                     type="button"
                     onClick={() => clearPendingError(p.localId)}
-                    className="text-slate-500 underline"
+                    className="text-muted underline"
                   >
                     rimuovi
                   </button>
                 </>
               ) : (
                 <>
-                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200">
+                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-3">
                     <div
-                      className="h-full bg-slate-900 transition-all"
+                      className="h-full bg-inverted transition-all"
                       style={{ width: `${p.progress}%` }}
                     />
                   </div>

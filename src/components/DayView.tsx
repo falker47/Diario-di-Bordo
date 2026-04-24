@@ -37,7 +37,7 @@ export function DayView({
         <section key={section} aria-labelledby={`sec-${section}`}>
           <h2
             id={`sec-${section}`}
-            className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500"
+            className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted"
           >
             {SECTION_LABELS[section]}
           </h2>

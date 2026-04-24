@@ -18,7 +18,7 @@ export default function NewContributionPage() {
   if (isSuperadmin) {
     return (
       <AdminShell>
-        <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        <p className="rounded-xl border border-amber-300/60 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300">
           L'account amministratore non può creare contributi. Usa un account utente.
         </p>
       </AdminShell>
@@ -44,7 +44,7 @@ export default function NewContributionPage() {
 
   return (
     <AdminShell>
-      <h1 className="mb-4 text-xl font-semibold text-slate-900">Nuovo contributo</h1>
+      <h1 className="mb-4 text-xl font-semibold text-primary">Nuovo contributo</h1>
       <ContributionEditor
         initial={{
           diary_date: initialDate,

@@ -61,23 +61,23 @@ export default function PostsPage() {
     <AdminShell>
       <Link
         to="/superadmin"
-        className="mb-3 inline-flex items-center text-sm text-slate-500 hover:text-slate-700"
+        className="mb-3 inline-flex items-center text-sm text-muted hover:text-primary"
       >
         ‹ Menu amministrazione
       </Link>
-      <h1 className="mb-1 text-xl font-semibold text-slate-900">Tutti i contributi</h1>
-      <p className="mb-4 text-sm text-slate-500">
+      <h1 className="mb-1 text-xl font-semibold text-primary">Tutti i contributi</h1>
+      <p className="mb-4 text-sm text-muted">
         {totalCount} {totalCount === 1 ? "contributo" : "contributi"}
         {hasFilters && " con i filtri correnti"}.
       </p>
 
-      <div className="mb-4 grid grid-cols-1 gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-4">
-        <label className="flex flex-col text-xs font-medium text-slate-600">
+      <div className="mb-4 grid grid-cols-1 gap-3 rounded-xl border border-hairline bg-surface p-4 shadow-card sm:grid-cols-4">
+        <label className="flex flex-col text-xs font-medium text-secondary">
           Autore
           <select
             value={authorId}
             onChange={(e) => handleFilterChange(setAuthorId)(e.target.value)}
-            className="mt-1 rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-800"
+            className="mt-1 rounded-lg border border-hairline-strong bg-surface px-2 py-1.5 text-sm text-primary"
           >
             <option value="">Tutti</option>
             {users.map((u) => (
@@ -87,14 +87,14 @@ export default function PostsPage() {
             ))}
           </select>
         </label>
-        <label className="flex flex-col text-xs font-medium text-slate-600">
+        <label className="flex flex-col text-xs font-medium text-secondary">
           Sezione
           <select
             value={section}
             onChange={(e) =>
               handleFilterChange(setSection)(e.target.value as Section | "")
             }
-            className="mt-1 rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-800"
+            className="mt-1 rounded-lg border border-hairline-strong bg-surface px-2 py-1.5 text-sm text-primary"
           >
             <option value="">Tutte</option>
             {SECTIONS.map((s) => (
@@ -104,29 +104,29 @@ export default function PostsPage() {
             ))}
           </select>
         </label>
-        <label className="flex flex-col text-xs font-medium text-slate-600">
+        <label className="flex flex-col text-xs font-medium text-secondary">
           Dal
           <input
             type="date"
             value={dateFrom}
             onChange={(e) => handleFilterChange(setDateFrom)(e.target.value)}
-            className="mt-1 rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-800"
+            className="mt-1 rounded-lg border border-hairline-strong bg-surface px-2 py-1.5 text-sm text-primary"
           />
         </label>
-        <label className="flex flex-col text-xs font-medium text-slate-600">
+        <label className="flex flex-col text-xs font-medium text-secondary">
           Al
           <input
             type="date"
             value={dateTo}
             onChange={(e) => handleFilterChange(setDateTo)(e.target.value)}
-            className="mt-1 rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-800"
+            className="mt-1 rounded-lg border border-hairline-strong bg-surface px-2 py-1.5 text-sm text-primary"
           />
         </label>
         {hasFilters && (
           <button
             type="button"
             onClick={resetFilters}
-            className="justify-self-start rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100 sm:col-span-4"
+            className="justify-self-start rounded-lg border border-hairline-strong bg-surface px-3 py-1.5 text-sm font-medium text-secondary hover:bg-surface-2 sm:col-span-4"
           >
             Pulisci filtri
           </button>
@@ -149,25 +149,25 @@ export default function PostsPage() {
             {contributions.map((c) => (
               <li
                 key={c.id}
-                className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm"
+                className="flex items-center justify-between gap-3 rounded-xl border border-hairline bg-surface px-4 py-3 shadow-card"
               >
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-slate-800">
+                  <p className="text-sm font-medium text-primary">
                     {formatShortDate(c.diary_date)} · {SECTION_LABELS[c.section]}
                   </p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-muted">
                     {c.author?.full_name ?? "Autore sconosciuto"}
                     {c.author?.is_active === false && " (disattivato)"}
                   </p>
                   {c.text_content && (
-                    <p className="mt-1 line-clamp-2 text-sm text-slate-600">
+                    <p className="mt-1 line-clamp-2 text-sm text-secondary">
                       {c.text_content}
                     </p>
                   )}
                 </div>
                 <Link
                   to={`/admin/modifica/${c.id}`}
-                  className="shrink-0 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-100"
+                  className="shrink-0 rounded-lg border border-hairline-strong bg-surface px-3 py-1.5 text-sm font-medium text-secondary shadow-sm hover:bg-surface-2"
                 >
                   Apri
                 </Link>
@@ -184,18 +184,18 @@ export default function PostsPage() {
                 type="button"
                 onClick={() => setPage((p) => Math.max(0, p - 1))}
                 disabled={page === 0}
-                className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-lg border border-hairline-strong bg-surface px-3 py-1.5 text-sm font-medium text-secondary shadow-sm hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 ‹ Precedente
               </button>
-              <span className="text-sm text-slate-500">
+              <span className="text-sm text-muted">
                 Pagina {page + 1} di {totalPages}
               </span>
               <button
                 type="button"
                 onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
                 disabled={page >= totalPages - 1}
-                className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-lg border border-hairline-strong bg-surface px-3 py-1.5 text-sm font-medium text-secondary shadow-sm hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Successiva ›
               </button>

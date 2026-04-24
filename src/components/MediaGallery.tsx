@@ -15,7 +15,7 @@ export function MediaGallery({ items }: { items: MediaItem[] }) {
             <button
               type="button"
               onClick={() => setOpenIndex(idx)}
-              className="group relative block aspect-square w-full overflow-hidden rounded-lg bg-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-500"
+              className="group relative block aspect-square w-full overflow-hidden rounded-lg bg-surface-2 focus:outline-none focus:ring-2 focus:ring-accent"
               aria-label={
                 item.type === "image" ? "Apri immagine" : "Apri video"
               }

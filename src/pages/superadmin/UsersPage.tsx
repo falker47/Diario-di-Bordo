@@ -52,21 +52,21 @@ export default function UsersPage() {
     <AdminShell>
       <Link
         to="/superadmin"
-        className="mb-3 inline-flex items-center text-sm text-slate-500 hover:text-slate-700"
+        className="mb-3 inline-flex items-center text-sm text-muted hover:text-primary"
       >
         ‹ Menu amministrazione
       </Link>
       <div className="mb-4 flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold text-slate-900">Utenti</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="text-xl font-semibold text-primary">Utenti</h1>
+          <p className="text-sm text-muted">
             {users.length} {users.length === 1 ? "utente" : "utenti"}
           </p>
         </div>
         <button
           type="button"
           onClick={() => setCreateOpen(true)}
-          className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-slate-800"
+          className="rounded-lg bg-inverted px-4 py-2 text-sm font-medium text-on-inverted shadow-sm hover:opacity-90"
         >
           + Nuovo utente
         </button>
@@ -81,10 +81,10 @@ export default function UsersPage() {
         />
       )}
       {!loading && !error && users.length > 0 && (
-        <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div className="overflow-x-auto rounded-xl border border-hairline bg-surface shadow-card">
           <table className="w-full min-w-[600px] text-sm">
             <thead>
-              <tr className="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase tracking-wider text-slate-500">
+              <tr className="border-b border-hairline bg-surface-2 text-left text-xs uppercase tracking-wider text-muted">
                 <th className="px-4 py-2 font-medium">Username</th>
                 <th className="px-4 py-2 font-medium">Nome completo</th>
                 <th className="px-4 py-2 font-medium">Stato</th>
@@ -96,24 +96,24 @@ export default function UsersPage() {
               {users.map((u) => (
                 <tr
                   key={u.id}
-                  className="border-b border-slate-100 last:border-0 hover:bg-slate-50"
+                  className="border-b border-hairline last:border-0 hover:bg-surface-2"
                 >
-                  <td className="px-4 py-3 font-mono text-xs text-slate-700">
+                  <td className="px-4 py-3 font-mono text-xs text-secondary">
                     {u.username}
                   </td>
-                  <td className="px-4 py-3 text-slate-800">{u.full_name}</td>
+                  <td className="px-4 py-3 text-primary">{u.full_name}</td>
                   <td className="px-4 py-3">
                     {u.is_active ? (
-                      <span className="inline-block rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">
+                      <span className="inline-block rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
                         Attivo
                       </span>
                     ) : (
-                      <span className="inline-block rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500">
+                      <span className="inline-block rounded-full bg-surface-3 px-2 py-0.5 text-xs font-medium text-muted">
                         Disattivato
                       </span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-xs text-slate-500">
+                  <td className="px-4 py-3 text-xs text-muted">
                     {formatShortDate(u.created_at)}
                   </td>
                   <td className="px-4 py-3">
@@ -121,7 +121,7 @@ export default function UsersPage() {
                       <button
                         type="button"
                         onClick={() => setEditTarget(u)}
-                        className="rounded-lg border border-slate-300 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-100"
+                        className="rounded-lg border border-hairline-strong bg-surface px-2.5 py-1 text-xs font-medium text-secondary shadow-sm hover:bg-surface-2"
                       >
                         Modifica
                       </button>
@@ -129,7 +129,7 @@ export default function UsersPage() {
                         <button
                           type="button"
                           onClick={() => setDeactivateTarget(u)}
-                          className="rounded-lg border border-red-200 bg-white px-2.5 py-1 text-xs font-medium text-red-700 shadow-sm hover:bg-red-50"
+                          className="rounded-lg border border-red-300/60 bg-surface px-2.5 py-1 text-xs font-medium text-red-700 shadow-sm hover:bg-red-50 dark:border-red-900/60 dark:text-red-300 dark:hover:bg-red-950/40"
                         >
                           Disattiva
                         </button>
@@ -137,7 +137,7 @@ export default function UsersPage() {
                         <button
                           type="button"
                           onClick={() => handleReactivate(u)}
-                          className="rounded-lg border border-emerald-200 bg-white px-2.5 py-1 text-xs font-medium text-emerald-700 shadow-sm hover:bg-emerald-50"
+                          className="rounded-lg border border-emerald-300/60 bg-surface px-2.5 py-1 text-xs font-medium text-emerald-700 shadow-sm hover:bg-emerald-50 dark:border-emerald-900/60 dark:text-emerald-300 dark:hover:bg-emerald-950/40"
                         >
                           Riattiva
                         </button>

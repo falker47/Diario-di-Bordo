@@ -54,15 +54,15 @@ export default function YearPage() {
         <Link
           to={`/anno/${year - 1}`}
           aria-label="Anno precedente"
-          className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 shadow-sm hover:bg-slate-100"
+          className="rounded-lg border border-hairline bg-surface px-3 py-1.5 text-sm text-secondary shadow-card hover:bg-surface-2"
         >
           ‹
         </Link>
-        <h1 className="text-xl font-semibold text-slate-900">{year}</h1>
+        <h1 className="text-xl font-semibold text-primary">{year}</h1>
         <Link
           to={`/anno/${year + 1}`}
           aria-label="Anno successivo"
-          className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 shadow-sm hover:bg-slate-100"
+          className="rounded-lg border border-hairline bg-surface px-3 py-1.5 text-sm text-secondary shadow-card hover:bg-surface-2"
         >
           ›
         </Link>
@@ -71,9 +71,9 @@ export default function YearPage() {
       {loading && <Spinner />}
       {error && <ErrorBox message={error} />}
       {!loading && !error && (
-        <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="overflow-x-auto rounded-2xl border border-hairline bg-surface p-4 shadow-card">
           <div className="flex gap-1.5">
-            <div className="flex flex-col justify-around pr-1 text-[10px] text-slate-400">
+            <div className="flex flex-col justify-around pr-1 text-[10px] text-subtle">
               {WEEKDAY_LABELS.map((d, i) => (
                 <span key={i} className="leading-3">
                   {d}
@@ -131,22 +131,22 @@ function buildYearGrid(start: Date, end: Date): Array<Array<Cell | null>> {
 }
 
 function intensityClass(count: number): string {
-  if (count === 0) return "bg-slate-100";
-  if (count === 1) return "bg-emerald-200";
-  if (count <= 3) return "bg-emerald-400";
-  if (count <= 6) return "bg-emerald-600";
-  return "bg-emerald-800";
+  if (count === 0) return "bg-surface-3";
+  if (count === 1) return "bg-emerald-200 dark:bg-emerald-900";
+  if (count <= 3) return "bg-emerald-400 dark:bg-emerald-700";
+  if (count <= 6) return "bg-emerald-600 dark:bg-emerald-500";
+  return "bg-emerald-800 dark:bg-emerald-300";
 }
 
 function Legend() {
   return (
-    <div className="mt-4 flex items-center justify-end gap-1.5 text-[11px] text-slate-500">
+    <div className="mt-4 flex items-center justify-end gap-1.5 text-[11px] text-muted">
       <span>meno</span>
-      <span className="h-3 w-3 rounded-sm bg-slate-100" />
-      <span className="h-3 w-3 rounded-sm bg-emerald-200" />
-      <span className="h-3 w-3 rounded-sm bg-emerald-400" />
-      <span className="h-3 w-3 rounded-sm bg-emerald-600" />
-      <span className="h-3 w-3 rounded-sm bg-emerald-800" />
+      <span className="h-3 w-3 rounded-sm bg-surface-3" />
+      <span className="h-3 w-3 rounded-sm bg-emerald-200 dark:bg-emerald-900" />
+      <span className="h-3 w-3 rounded-sm bg-emerald-400 dark:bg-emerald-700" />
+      <span className="h-3 w-3 rounded-sm bg-emerald-600 dark:bg-emerald-500" />
+      <span className="h-3 w-3 rounded-sm bg-emerald-800 dark:bg-emerald-300" />
       <span>più</span>
     </div>
   );

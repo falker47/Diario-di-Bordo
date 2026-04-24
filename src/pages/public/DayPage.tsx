@@ -57,13 +57,13 @@ export default function DayPage() {
       <div className="mb-4 flex items-start justify-between gap-2">
         <Link
           to={`/giorno/${prevDate}`}
-          className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 shadow-sm hover:bg-slate-100"
+          className="rounded-lg border border-hairline bg-surface px-3 py-1.5 text-sm text-secondary shadow-card hover:bg-surface-2"
           aria-label="Giorno precedente"
         >
           ‹ Precedente
         </Link>
 
-        <div className="inline-flex flex-col overflow-hidden rounded-lg border border-slate-300 bg-white shadow-sm">
+        <div className="inline-flex flex-col overflow-hidden rounded-lg border border-hairline-strong bg-surface shadow-card">
           <input
             type="date"
             value={date}
@@ -73,19 +73,19 @@ export default function DayPage() {
               if (isValidISODate(next)) navigate(`/giorno/${next}`);
             }}
             aria-label="Scegli una data"
-            className="border-0 bg-transparent px-3 py-1.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-200"
+            className="border-0 bg-transparent px-3 py-1.5 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-accent/30"
           />
           {isToday ? (
             <span
               aria-disabled="true"
-              className="border-t border-slate-200 px-3 py-1.5 text-center text-xs font-medium text-slate-300"
+              className="border-t border-hairline px-3 py-1.5 text-center text-xs font-medium text-subtle"
             >
               Sei alla giornata di oggi
             </span>
           ) : (
             <Link
               to={`/giorno/${today}`}
-              className="border-t border-slate-200 px-3 py-1.5 text-center text-xs font-medium text-slate-700 hover:bg-slate-50"
+              className="border-t border-hairline px-3 py-1.5 text-center text-xs font-medium text-secondary hover:bg-surface-2"
             >
               Vai alla giornata di oggi
             </Link>
@@ -95,10 +95,10 @@ export default function DayPage() {
         <Link
           to={`/giorno/${nextDate}`}
           aria-label="Giorno successivo"
-          className={`rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm shadow-sm ${
+          className={`rounded-lg border border-hairline bg-surface px-3 py-1.5 text-sm shadow-card ${
             isToday
-              ? "pointer-events-none text-slate-300"
-              : "text-slate-700 hover:bg-slate-100"
+              ? "pointer-events-none text-subtle"
+              : "text-secondary hover:bg-surface-2"
           }`}
           aria-disabled={isToday}
         >
@@ -106,9 +106,9 @@ export default function DayPage() {
         </Link>
       </div>
 
-      <h1 className="mb-4 text-xl font-semibold text-slate-900">
+      <h1 className="mb-4 text-xl font-semibold text-primary">
         {formatLongDate(date)}
-        {isToday && <span className="ml-2 text-sm font-normal text-slate-500">(oggi)</span>}
+        {isToday && <span className="ml-2 text-sm font-normal text-muted">(oggi)</span>}
       </h1>
 
       {loading && <Spinner />}

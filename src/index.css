@@ -2,8 +2,75 @@
 @tailwind components;
 @tailwind utilities;
 
-html,
-body,
-#root {
-  height: 100%;
+@layer base {
+  :root {
+    /* Light — Apple-inspired neutral palette, warmer than pure slate.
+       Colors expressed as "r g b" so Tailwind's <alpha-value> slot works. */
+    --color-app: 242 242 247;          /* #F2F2F7 — systemGroupedBackground */
+    --color-surface: 255 255 255;      /* cards                            */
+    --color-surface-2: 248 248 250;    /* subtle hover / nested            */
+    --color-surface-3: 229 229 234;    /* badges, input bg                 */
+    --color-inverted: 28 28 30;        /* primary CTA bg                   */
+    --color-on-inverted: 255 255 255;  /* text on CTA                      */
+    --color-hairline: 229 229 234;     /* subtle separators                */
+    --color-hairline-strong: 209 209 214; /* input borders                 */
+    --color-text-primary: 29 29 31;    /* label / heading                  */
+    --color-text-secondary: 60 60 67;  /* body                             */
+    --color-text-muted: 99 99 102;     /* metadata                         */
+    --color-subtle: 174 174 178;       /* placeholder, tertiary            */
+    --color-text-subtle: 174 174 178;
+    --color-accent: 10 132 255;        /* systemBlue                       */
+    color-scheme: light;
+  }
+
+  :root.dark {
+    /* Dark — iOS/macOS dark palette. Not pure black so long reads don't strain. */
+    --color-app: 0 0 0;                /* pure black, OLED-friendly        */
+    --color-surface: 28 28 30;         /* systemSecondaryBackground        */
+    --color-surface-2: 44 44 46;       /* systemTertiaryBackground         */
+    --color-surface-3: 58 58 60;       /* elevated controls                */
+    --color-inverted: 255 255 255;     /* CTA bg in dark                   */
+    --color-on-inverted: 28 28 30;     /* text on CTA                      */
+    --color-hairline: 44 44 46;        /* subtle separators                */
+    --color-hairline-strong: 72 72 74; /* input borders                    */
+    --color-text-primary: 245 245 247; /* label / heading                  */
+    --color-text-secondary: 235 235 245;/* body                            */
+    --color-text-muted: 174 174 178;   /* metadata                         */
+    --color-text-subtle: 124 124 128;
+    --color-accent: 10 132 255;
+    color-scheme: dark;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    background-color: rgb(var(--color-app));
+    color: rgb(var(--color-text-primary));
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition:
+      background-color 180ms ease,
+      color 180ms ease;
+  }
+
+  /* Native form controls pick up the right palette automatically. */
+  input,
+  textarea,
+  select,
+  button {
+    color-scheme: inherit;
+  }
+}
+
+@layer utilities {
+  /* Ring styles used for accessibility focus — theme aware. */
+  .focus-ring {
+    outline: none;
+    box-shadow: 0 0 0 2px rgb(var(--color-app)),
+      0 0 0 4px rgb(var(--color-accent) / 0.5);
+  }
 }

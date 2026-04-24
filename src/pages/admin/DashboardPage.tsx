@@ -59,14 +59,14 @@ export default function DashboardPage() {
     <AdminShell>
       <div className="mb-6 flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold text-slate-900">
+          <h1 className="text-xl font-semibold text-primary">
             Ciao{profile ? ` ${profile.full_name}` : ""}
           </h1>
-          <p className="text-sm text-slate-500">I tuoi ultimi contributi</p>
+          <p className="text-sm text-muted">I tuoi ultimi contributi</p>
         </div>
         <Link
           to={`/admin/nuovo?date=${todayISO()}`}
-          className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-slate-800"
+          className="rounded-lg bg-inverted px-4 py-2 text-sm font-medium text-on-inverted shadow-sm hover:opacity-90"
         >
           + Nuovo contributo
         </Link>
@@ -81,7 +81,7 @@ export default function DashboardPage() {
           action={
             <Link
               to={`/admin/nuovo?date=${todayISO()}`}
-              className="mt-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
+              className="mt-2 rounded-lg bg-inverted px-4 py-2 text-sm font-medium text-on-inverted hover:opacity-90"
             >
               Scrivi il primo contributo
             </Link>
@@ -93,17 +93,17 @@ export default function DashboardPage() {
           {data.map((c) => (
             <li
               key={c.id}
-              className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm"
+              className="flex items-center justify-between gap-3 rounded-xl border border-hairline bg-surface px-4 py-3 shadow-card"
             >
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-slate-800">
+                <p className="text-sm font-medium text-primary">
                   {formatLongDate(c.diary_date)}
                 </p>
-                <p className="text-xs uppercase tracking-wide text-slate-500">
+                <p className="text-xs uppercase tracking-wide text-muted">
                   {SECTION_LABELS[c.section]}
                 </p>
                 {c.text_content && (
-                  <p className="mt-1 line-clamp-2 text-sm text-slate-600">
+                  <p className="mt-1 line-clamp-2 text-sm text-secondary">
                     {c.text_content}
                   </p>
                 )}
@@ -111,14 +111,14 @@ export default function DashboardPage() {
               <div className="flex shrink-0 items-center gap-2">
                 <Link
                   to={`/admin/modifica/${c.id}`}
-                  className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-100"
+                  className="rounded-lg border border-hairline-strong bg-surface px-3 py-1.5 text-sm font-medium text-secondary shadow-sm hover:bg-surface-2"
                 >
                   Modifica
                 </Link>
                 <button
                   type="button"
                   onClick={() => setPendingDelete(c)}
-                  className="rounded-lg border border-red-200 bg-white px-3 py-1.5 text-sm font-medium text-red-700 shadow-sm hover:bg-red-50"
+                  className="rounded-lg border border-red-300/60 bg-surface px-3 py-1.5 text-sm font-medium text-red-700 shadow-sm hover:bg-red-50 dark:border-red-900/60 dark:text-red-300 dark:hover:bg-red-950/40"
                 >
                   Elimina
                 </button>

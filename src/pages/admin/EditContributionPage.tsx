@@ -103,10 +103,10 @@ function EditContributionInner({ contributionId }: { contributionId: string }) {
 
   return (
     <AdminShell>
-      <h1 className="mb-4 text-xl font-semibold text-slate-900">Modifica contributo</h1>
+      <h1 className="mb-4 text-xl font-semibold text-primary">Modifica contributo</h1>
 
       {superadminEditingOthers && (
-        <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+        <div className="mb-4 rounded-xl border border-amber-300/60 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-200">
           Stai modificando come amministrazione il contributo di{" "}
           <strong>{contribution.author?.full_name ?? "autore sconosciuto"}</strong>.
           Le modifiche saranno tracciate come "modifica" (data visibile

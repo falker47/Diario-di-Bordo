@@ -65,15 +65,15 @@ export default function WeekPage() {
         <Link
           to={`/settimana/${prevWeek}`}
           aria-label="Settimana precedente"
-          className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 shadow-sm hover:bg-slate-100"
+          className="rounded-lg border border-hairline bg-surface px-3 py-1.5 text-sm text-secondary shadow-card hover:bg-surface-2"
         >
           ‹ Precedente
         </Link>
-        <h1 className="text-xl font-semibold text-slate-900">{`Settimana ${isoWeek.slice(-2)}`}</h1>
+        <h1 className="text-xl font-semibold text-primary">{`Settimana ${isoWeek.slice(-2)}`}</h1>
         <Link
           to={`/settimana/${nextWeek}`}
           aria-label="Settimana successiva"
-          className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 shadow-sm hover:bg-slate-100"
+          className="rounded-lg border border-hairline bg-surface px-3 py-1.5 text-sm text-secondary shadow-card hover:bg-surface-2"
         >
           Successiva ›
         </Link>
@@ -90,19 +90,19 @@ export default function WeekPage() {
               <li key={day}>
                 <Link
                   to={`/giorno/${day}`}
-                  className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-slate-400 hover:bg-slate-50"
+                  className="flex items-center justify-between rounded-xl border border-hairline bg-surface px-4 py-3 shadow-card hover:border-hairline-strong hover:bg-surface-2"
                 >
                   <div>
-                    <p className="text-sm font-medium text-slate-800">
+                    <p className="text-sm font-medium text-primary">
                       {format(date, "EEEE d MMMM", { locale: it })}
                     </p>
-                    <p className="text-xs text-slate-500">{day}</p>
+                    <p className="text-xs text-muted">{day}</p>
                   </div>
                   <span
                     className={`rounded-full px-2.5 py-1 text-xs font-medium ${
                       count > 0
-                        ? "bg-slate-900 text-white"
-                        : "bg-slate-100 text-slate-400"
+                        ? "bg-inverted text-on-inverted"
+                        : "bg-surface-3 text-subtle"
                     }`}
                   >
                     {count > 0 ? `${count} contributi` : "vuoto"}

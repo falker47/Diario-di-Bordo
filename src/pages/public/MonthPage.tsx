@@ -73,15 +73,15 @@ export default function MonthPage() {
         <Link
           to={`/mese/${prevMonth}`}
           aria-label="Mese precedente"
-          className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 shadow-sm hover:bg-slate-100"
+          className="rounded-lg border border-hairline bg-surface px-3 py-1.5 text-sm text-secondary shadow-card hover:bg-surface-2"
         >
           ‹
         </Link>
-        <h1 className="text-xl font-semibold capitalize text-slate-900">{monthLabel}</h1>
+        <h1 className="text-xl font-semibold capitalize text-primary">{monthLabel}</h1>
         <Link
           to={`/mese/${nextMonth}`}
           aria-label="Mese successivo"
-          className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 shadow-sm hover:bg-slate-100"
+          className="rounded-lg border border-hairline bg-surface px-3 py-1.5 text-sm text-secondary shadow-card hover:bg-surface-2"
         >
           ›
         </Link>
@@ -90,8 +90,8 @@ export default function MonthPage() {
       {loading && <Spinner />}
       {error && <ErrorBox message={error} />}
       {!loading && !error && (
-        <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
-          <div className="mb-2 grid grid-cols-7 gap-1 text-center text-xs font-semibold text-slate-500">
+        <div className="rounded-2xl border border-hairline bg-surface p-3 shadow-card">
+          <div className="mb-2 grid grid-cols-7 gap-1 text-center text-xs font-semibold text-muted">
             {WEEKDAY_LABELS.map((label) => (
               <div key={label}>{label}</div>
             ))}
@@ -109,14 +109,14 @@ export default function MonthPage() {
                   className={[
                     "flex aspect-square flex-col items-center justify-center rounded-lg border text-sm transition-colors",
                     inMonth
-                      ? "border-slate-200 bg-white text-slate-700 hover:border-slate-400 hover:bg-slate-50"
-                      : "border-transparent bg-slate-50 text-slate-300",
-                    today ? "ring-2 ring-slate-900 ring-offset-1" : "",
+                      ? "border-hairline bg-surface text-secondary hover:border-hairline-strong hover:bg-surface-2"
+                      : "border-transparent bg-surface-2 text-subtle",
+                    today ? "ring-2 ring-accent ring-offset-1 ring-offset-surface" : "",
                   ].join(" ")}
                 >
                   <span className="font-medium">{day.getDate()}</span>
                   {count > 0 && (
-                    <span className="mt-0.5 inline-block h-1.5 w-1.5 rounded-full bg-slate-900" aria-label={`${count} contributi`} />
+                    <span className="mt-0.5 inline-block h-1.5 w-1.5 rounded-full bg-accent" aria-label={`${count} contributi`} />
                   )}
                 </Link>
               );

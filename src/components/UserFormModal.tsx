@@ -126,19 +126,19 @@ export function UserFormModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="user-form-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
       onClick={() => !submitting && onClose()}
     >
       <form
         onSubmit={handleSubmit}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-md space-y-4 rounded-2xl bg-white p-5 shadow-xl"
+        className="w-full max-w-md space-y-4 rounded-2xl border border-hairline bg-surface p-5 shadow-xl"
       >
-        <h2 id="user-form-title" className="text-base font-semibold text-slate-900">
+        <h2 id="user-form-title" className="text-base font-semibold text-primary">
           {mode === "create" ? "Nuovo utente" : `Modifica ${target?.full_name ?? ""}`}
         </h2>
 
-        <label className="block text-sm font-medium text-slate-700">
+        <label className="block text-sm font-medium text-primary">
           Username
           <input
             type="text"
@@ -149,47 +149,47 @@ export function UserFormModal({
             autoCorrect="off"
             spellCheck={false}
             placeholder="es. lucia"
-            className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
+            className="mt-1 block w-full rounded-lg border border-hairline-strong bg-surface px-3 py-2 text-sm text-primary placeholder:text-subtle shadow-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
           />
-          <span className="mt-1 block text-xs text-slate-500">
+          <span className="mt-1 block text-xs text-muted">
             3-20 caratteri, lettere minuscole, numeri, underscore.
           </span>
         </label>
 
         {mode === "create" ? (
           <div className="grid grid-cols-2 gap-3">
-            <label className="block text-sm font-medium text-slate-700">
+            <label className="block text-sm font-medium text-primary">
               Nome
               <input
                 type="text"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
-                className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
+                className="mt-1 block w-full rounded-lg border border-hairline-strong bg-surface px-3 py-2 text-sm text-primary shadow-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
               />
             </label>
-            <label className="block text-sm font-medium text-slate-700">
+            <label className="block text-sm font-medium text-primary">
               Cognome
               <input
                 type="text"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
-                className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
+                className="mt-1 block w-full rounded-lg border border-hairline-strong bg-surface px-3 py-2 text-sm text-primary shadow-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
               />
             </label>
           </div>
         ) : (
-          <label className="block text-sm font-medium text-slate-700">
+          <label className="block text-sm font-medium text-primary">
             Nome completo
             <input
               type="text"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
+              className="mt-1 block w-full rounded-lg border border-hairline-strong bg-surface px-3 py-2 text-sm text-primary shadow-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
             />
           </label>
         )}
 
-        <label className="block text-sm font-medium text-slate-700">
+        <label className="block text-sm font-medium text-primary">
           {mode === "create" ? "Password" : "Nuova password (opzionale)"}
           <input
             type="password"
@@ -197,17 +197,17 @@ export function UserFormModal({
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="new-password"
             placeholder={mode === "update" ? "Lascia vuoto per non cambiare" : ""}
-            className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
+            className="mt-1 block w-full rounded-lg border border-hairline-strong bg-surface px-3 py-2 text-sm text-primary placeholder:text-subtle shadow-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
           />
           {mode === "create" && (
-            <span className="mt-1 block text-xs text-slate-500">Minimo 8 caratteri.</span>
+            <span className="mt-1 block text-xs text-muted">Minimo 8 caratteri.</span>
           )}
         </label>
 
         {formError && (
           <div
             role="alert"
-            className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+            className="rounded-lg border border-red-300/60 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300"
           >
             {formError}
           </div>
@@ -218,14 +218,14 @@ export function UserFormModal({
             type="button"
             onClick={onClose}
             disabled={submitting}
-            className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-100 disabled:opacity-50"
+            className="rounded-lg border border-hairline-strong bg-surface px-3 py-1.5 text-sm font-medium text-secondary shadow-sm hover:bg-surface-2 disabled:opacity-50"
           >
             Annulla
           </button>
           <button
             type="submit"
             disabled={submitting}
-            className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-slate-800 disabled:opacity-50"
+            className="rounded-lg bg-inverted px-3 py-1.5 text-sm font-medium text-on-inverted shadow-sm hover:opacity-90 disabled:opacity-50"
           >
             {submitting
               ? "Attendere…"
