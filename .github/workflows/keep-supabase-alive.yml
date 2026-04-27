@@ -1,0 +1,44 @@
+name: Keep Supabase Alive
+
+# Pinga il database ogni 3 giorni per evitare la pausa per inattività
+# del piano Free di Supabase (sospensione dopo 7 giorni senza query).
+# Esegue una SELECT minima sulla tabella contributions, che ha
+# policy RLS di lettura pubblica (anon key sufficiente).
+
+on:
+  schedule:
+    - cron: '0 9 */3 * *'  # ogni 3 giorni alle 09:00 UTC
+  workflow_dispatch:        # esecuzione manuale dalla UI di GitHub
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase REST endpoint
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${SUPABASE_URL:-}" ] || [ -z "${SUPABASE_ANON_KEY:-}" ]; then
+            echo "::error::SUPABASE_URL o SUPABASE_ANON_KEY non configurati nei secrets del repo."
+            exit 1
+          fi
+
+          response=$(curl -sS -o /tmp/body -w "%{http_code}" \
+            "${SUPABASE_URL}/rest/v1/contributions?select=id&limit=1" \
+            -H "apikey: ${SUPABASE_ANON_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}")
+
+          echo "HTTP status: ${response}"
+          echo "Response body:"
+          cat /tmp/body
+          echo
+
+          if [ "${response}" -ge 200 ] && [ "${response}" -lt 300 ]; then
+            echo "Ping riuscito — database attivo."
+          else
+            echo "::error::Ping fallito (HTTP ${response})."
+            exit 1
+          fi
