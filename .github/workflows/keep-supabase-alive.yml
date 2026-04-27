@@ -4,16 +4,26 @@ name: Keep Supabase Alive
 # del piano Free di Supabase (sospensione dopo 7 giorni senza query).
 # Esegue una SELECT minima sulla tabella contributions, che ha
 # policy RLS di lettura pubblica (anon key sufficiente).
+#
+# Dopo il ping, committa un timestamp in .github/last-keep-alive.txt
+# per tenere il repo "attivo" ed evitare che GitHub disabiliti i
+# workflow schedulati dopo 60 giorni di inattività del repo.
 
 on:
   schedule:
     - cron: '0 9 */3 * *'  # ogni 3 giorni alle 09:00 UTC
   workflow_dispatch:        # esecuzione manuale dalla UI di GitHub
 
+permissions:
+  contents: write           # necessario per il commit del timestamp
+
 jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Ping Supabase REST endpoint
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -42,3 +52,26 @@ jobs:
             echo "::error::Ping fallito (HTTP ${response})."
             exit 1
           fi
+
+      - name: Update keep-alive timestamp
+        run: |
+          set -euo pipefail
+          mkdir -p .github
+          date -u +"%Y-%m-%dT%H:%M:%SZ" > .github/last-keep-alive.txt
+          echo "Timestamp aggiornato:"
+          cat .github/last-keep-alive.txt
+
+      - name: Commit and push timestamp
+        run: |
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if git diff --quiet .github/last-keep-alive.txt; then
+            echo "Nessuna modifica da committare."
+            exit 0
+          fi
+
+          git add .github/last-keep-alive.txt
+          git commit -m "chore: keep-alive ping $(date -u +%Y-%m-%d)"
+          git push
