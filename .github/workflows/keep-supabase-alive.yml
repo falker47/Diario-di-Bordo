@@ -1,17 +1,21 @@
 name: Keep Supabase Alive
 
-# Pinga il database ogni 3 giorni per evitare la pausa per inattività
-# del piano Free di Supabase (sospensione dopo 7 giorni senza query).
-# Esegue una SELECT minima sulla tabella contributions, che ha
-# policy RLS di lettura pubblica (anon key sufficiente).
+# Genera attivita' di scrittura reale sul DB Supabase ogni 2 giorni
+# per evitare l'auto-pause del piano Free.
+#
+# Il semplice SELECT REST con anon key non e' sufficiente: l'auto-pause
+# di Supabase filtra i pattern sintetici (richieste anon regolari).
+# Qui facciamo un UPDATE con il service_role su una tabella dedicata
+# (_keep_alive, vedi migration 0003): e' una write query non-cacheable
+# e l'auth come service_role e' considerata "owner activity".
 #
 # Dopo il ping, committa un timestamp in .github/last-keep-alive.txt
 # per tenere il repo "attivo" ed evitare che GitHub disabiliti i
-# workflow schedulati dopo 60 giorni di inattività del repo.
+# workflow schedulati dopo 60 giorni di inattivita' del repo.
 
 on:
   schedule:
-    - cron: '0 9 */3 * *'  # ogni 3 giorni alle 09:00 UTC
+    - cron: '0 9 */2 * *'  # ogni 2 giorni alle 09:00 UTC
   workflow_dispatch:        # esecuzione manuale dalla UI di GitHub
 
 permissions:
@@ -24,34 +28,50 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Ping Supabase REST endpoint
+      - name: Ping Supabase via UPDATE
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           set -euo pipefail
 
-          if [ -z "${SUPABASE_URL:-}" ] || [ -z "${SUPABASE_ANON_KEY:-}" ]; then
-            echo "::error::SUPABASE_URL o SUPABASE_ANON_KEY non configurati nei secrets del repo."
+          if [ -z "${SUPABASE_URL:-}" ] || [ -z "${SUPABASE_SERVICE_ROLE_KEY:-}" ]; then
+            echo "::error::SUPABASE_URL o SUPABASE_SERVICE_ROLE_KEY non configurati nei secrets del repo."
             exit 1
           fi
 
+          # UPDATE _keep_alive set pinged_at = now() where id = 1
+          # PATCH genera una query SQL UPDATE reale: scrittura non-cacheable
+          # e attivita' visibile nei contatori di Supabase.
+          timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
           response=$(curl -sS -o /tmp/body -w "%{http_code}" \
-            "${SUPABASE_URL}/rest/v1/contributions?select=id&limit=1" \
-            -H "apikey: ${SUPABASE_ANON_KEY}" \
-            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}")
+            -X PATCH \
+            "${SUPABASE_URL}/rest/v1/_keep_alive?id=eq.1" \
+            -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
+            -H "Content-Type: application/json" \
+            -H "Prefer: return=representation" \
+            -d "{\"pinged_at\":\"${timestamp}\"}")
 
           echo "HTTP status: ${response}"
           echo "Response body:"
           cat /tmp/body
           echo
 
-          if [ "${response}" -ge 200 ] && [ "${response}" -lt 300 ]; then
-            echo "Ping riuscito — database attivo."
-          else
-            echo "::error::Ping fallito (HTTP ${response})."
+          if [ "${response}" -lt 200 ] || [ "${response}" -ge 300 ]; then
+            echo "::error::UPDATE fallito (HTTP ${response})."
             exit 1
           fi
+
+          # Verifica che la riga sia stata effettivamente aggiornata.
+          # Una PATCH con filtro che non matcha alcuna riga ritorna 200 + [].
+          if ! grep -q '"id"' /tmp/body; then
+            echo "::error::UPDATE eseguito ma nessuna riga aggiornata. Eseguire la migration 0003_keep_alive.sql sul DB."
+            exit 1
+          fi
+
+          echo "Ping riuscito — UPDATE registrato sul DB."
 
       - name: Update keep-alive timestamp
         run: |
@@ -67,11 +87,15 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          if git diff --quiet .github/last-keep-alive.txt; then
+          git add .github/last-keep-alive.txt
+
+          # git diff --quiet --cached funziona anche su file non ancora
+          # tracciati nella HEAD (a differenza di git diff --quiet, che
+          # ignora gli untracked e ritorna sempre 0).
+          if git diff --quiet --cached; then
             echo "Nessuna modifica da committare."
             exit 0
           fi
 
-          git add .github/last-keep-alive.txt
           git commit -m "chore: keep-alive ping $(date -u +%Y-%m-%d)"
           git push
