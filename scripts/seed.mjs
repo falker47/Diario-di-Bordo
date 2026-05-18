@@ -33,7 +33,7 @@ const CONTRIBUTIONS = [
   },
   {
     diary_date: "2026-04-22",
-    section: "rilancio",
+    section: "equipe",
     text_content:
       "Per domani: continuare il progetto orto e raccogliere idee per la gita di maggio. Sentire i genitori entro venerdì per i consensi.",
   },

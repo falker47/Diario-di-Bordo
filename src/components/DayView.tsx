@@ -9,7 +9,7 @@ function groupBySection(
   const grouped: Record<Section, ContributionWithAuthor[]> = {
     quotidiani: [],
     speciali: [],
-    rilancio: [],
+    equipe: [],
   };
   for (const c of contributions) grouped[c.section].push(c);
   return grouped;

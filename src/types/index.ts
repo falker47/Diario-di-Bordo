@@ -1,11 +1,11 @@
-export type Section = "quotidiani" | "speciali" | "rilancio";
+export type Section = "quotidiani" | "speciali" | "equipe";
 
-export const SECTIONS: readonly Section[] = ["quotidiani", "speciali", "rilancio"] as const;
+export const SECTIONS: readonly Section[] = ["quotidiani", "speciali", "equipe"] as const;
 
 export const SECTION_LABELS: Record<Section, string> = {
   quotidiani: "Quotidiani",
   speciali: "Speciali",
-  rilancio: "Rilancio",
+  equipe: "Equipe",
 };
 
 export type ImageMediaItem = {
