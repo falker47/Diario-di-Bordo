@@ -39,7 +39,7 @@ export default function NewContributionPage() {
     });
     if (error) throw new Error(error.message);
     push("Contributo pubblicato.", "success");
-    navigate(`/giorno/${data.diary_date}`);
+    navigate("/admin");
   }
 
   return (

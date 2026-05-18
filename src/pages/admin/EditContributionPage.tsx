@@ -98,7 +98,7 @@ function EditContributionInner({ contributionId }: { contributionId: string }) {
       .eq("id", id);
     if (err) throw new Error(err.message);
     push("Modifiche salvate.", "success");
-    navigate(isSuperadmin ? "/superadmin/posts" : `/giorno/${data.diary_date}`);
+    navigate(isSuperadmin ? "/superadmin/posts" : "/admin");
   }
 
   return (
