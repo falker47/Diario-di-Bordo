@@ -32,11 +32,47 @@ export function MediaUploader({
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [pending, setPending] = useState<Pending[]>([]);
+  const [dragOver, setDragOver] = useState(false);
+  const dragCounter = useRef(0);
   const { push } = useToast();
 
   function pickFiles() {
     inputRef.current?.click();
   }
+
+  /* ── Drag-and-drop handlers ─────────────────────────── */
+
+  function handleDragEnter(e: React.DragEvent<HTMLButtonElement>) {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounter.current += 1;
+    if (dragCounter.current === 1) setDragOver(true);
+  }
+
+  function handleDragOver(e: React.DragEvent<HTMLButtonElement>) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  function handleDragLeave(e: React.DragEvent<HTMLButtonElement>) {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounter.current -= 1;
+    if (dragCounter.current === 0) setDragOver(false);
+  }
+
+  function handleDrop(e: React.DragEvent<HTMLButtonElement>) {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounter.current = 0;
+    setDragOver(false);
+    const { files } = e.dataTransfer;
+    if (files && files.length > 0) {
+      void handleFiles(files);
+    }
+  }
+
+  /* ── File processing (shared by click & drop) ───────── */
 
   async function handleFiles(files: FileList | null) {
     if (!files || files.length === 0) return;
@@ -99,9 +135,20 @@ export function MediaUploader({
       <button
         type="button"
         onClick={pickFiles}
-        className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-hairline-strong bg-surface px-4 py-6 text-sm text-secondary hover:border-accent/60 hover:bg-surface-2"
+        onDragEnter={handleDragEnter}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        className={`flex w-full flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed px-4 py-6 text-sm transition-colors duration-200 ${
+          dragOver
+            ? "border-accent bg-accent/10 text-accent"
+            : "border-hairline-strong bg-surface text-secondary hover:border-accent/60 hover:bg-surface-2"
+        }`}
       >
-        + Aggiungi foto o video
+        <span>+ Aggiungi foto o video</span>
+        <span className="hidden text-xs text-muted sm:inline">
+          o trascina qui i file
+        </span>
       </button>
 
       {(value.length > 0 || pending.length > 0) && (
