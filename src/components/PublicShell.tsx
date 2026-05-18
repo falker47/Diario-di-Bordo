@@ -5,6 +5,7 @@ import {
   type ReactNode,
   type SVGProps,
 } from "react";
+import { createPortal } from "react-dom";
 import { Link, useNavigate } from "react-router-dom";
 import { formatLongDate, todayISO } from "@/lib/dates";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -212,14 +213,15 @@ function UserMenu() {
         </span>
       </button>
 
-      {open && (
-        <>
-          {/* Backdrop */}
-          <div
-            aria-hidden="true"
-            onClick={close}
-            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
-          />
+      {open &&
+        createPortal(
+          <>
+            {/* Backdrop */}
+            <div
+              aria-hidden="true"
+              onClick={close}
+              className="fixed inset-0 z-40 cursor-pointer bg-black/50 backdrop-blur-sm"
+            />
 
           {/* Drawer */}
           <aside
@@ -350,28 +352,32 @@ function UserMenu() {
               </button>
             </div>
           </aside>
+          </>,
+          document.body,
+        )}
 
-          <ConfirmDialog
-            open={pendingDelete !== null}
-            title="Eliminare il contributo?"
-            message={
-              pendingDelete
-                ? `Stai per eliminare il contributo del ${formatLongDate(
-                    pendingDelete.diary_date,
-                  )} (${SECTION_LABELS[pendingDelete.section]}). L'azione non si può annullare${
-                    (pendingDelete.media?.length ?? 0) > 0
-                      ? `: anche ${pendingDelete.media.length} media verranno rimossi.`
-                      : "."
-                  }`
-                : ""
-            }
-            confirmLabel="Elimina"
-            destructive
-            busy={deleting}
-            onCancel={() => !deleting && setPendingDelete(null)}
-            onConfirm={handleConfirmDelete}
-          />
-        </>
+      {createPortal(
+        <ConfirmDialog
+          open={pendingDelete !== null}
+          title="Eliminare il contributo?"
+          message={
+            pendingDelete
+              ? `Stai per eliminare il contributo del ${formatLongDate(
+                  pendingDelete.diary_date,
+                )} (${SECTION_LABELS[pendingDelete.section]}). L'azione non si può annullare${
+                  (pendingDelete.media?.length ?? 0) > 0
+                    ? `: anche ${pendingDelete.media.length} media verranno rimossi.`
+                    : "."
+                }`
+              : ""
+          }
+          confirmLabel="Elimina"
+          destructive
+          busy={deleting}
+          onCancel={() => !deleting && setPendingDelete(null)}
+          onConfirm={handleConfirmDelete}
+        />,
+        document.body,
       )}
     </>
   );
