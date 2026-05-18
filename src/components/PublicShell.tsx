@@ -132,9 +132,13 @@ function UserMenu() {
   const [pendingDelete, setPendingDelete] = useState<Contribution | null>(null);
   const [deleting, setDeleting] = useState(false);
 
-  const displayName = isSuperadmin
+  const fullName = isSuperadmin
     ? "Amministrazione"
     : profile?.full_name ?? "Utente";
+
+  const firstName = isSuperadmin
+    ? "Amministrazione"
+    : profile?.full_name?.trim().split(" ")[0] ?? "Utente";
 
   // Per il superadmin la lista non si popola (l'account non ha contributi).
   const authorId = !isSuperadmin && user ? user.id : null;
@@ -209,7 +213,8 @@ function UserMenu() {
       >
         <IconMenu className="h-5 w-5" />
         <span className="max-w-[7rem] truncate sm:max-w-[12rem]">
-          {displayName}
+          <span className="sm:hidden">{firstName}</span>
+          <span className="hidden sm:inline">{fullName}</span>
         </span>
       </button>
 
@@ -240,7 +245,8 @@ function UserMenu() {
               >
                 <IconMenu className="h-5 w-5 text-muted shrink-0" />
                 <span className="truncate text-sm font-medium text-primary">
-                  {displayName}
+                  <span className="sm:hidden">{firstName}</span>
+                  <span className="hidden sm:inline">{fullName}</span>
                 </span>
               </button>
             </div>
