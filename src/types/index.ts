@@ -53,6 +53,21 @@ export type ContributionWithAuthor = Contribution & {
   author: ContributionAuthor | null;
 };
 
+export type Comment = {
+  id: string;
+  contribution_id: string;
+  author_id: string;
+  text_content: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type CommentWithAuthor = Comment & {
+  author: ContributionAuthor | null;
+};
+
+export const COMMENT_MAX_LENGTH = 2000;
+
 export type Database = {
   public: {
     Tables: {
@@ -79,6 +94,16 @@ export type Database = {
           title?: string | null;
         };
         Update: Partial<Omit<Contribution, "id" | "created_at" | "author_id">>;
+        Relationships: [];
+      };
+      comments: {
+        Row: Comment;
+        Insert: Omit<Comment, "id" | "created_at" | "updated_at"> & {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Pick<Comment, "text_content">>;
         Relationships: [];
       };
     };

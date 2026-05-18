@@ -40,7 +40,7 @@ export default function NewContributionPage() {
     });
     if (error) throw new Error(error.message);
     push("Contributo pubblicato.", "success");
-    navigate("/admin");
+    navigate(`/giorno/${data.diary_date}`);
   }
 
   return (
@@ -55,7 +55,7 @@ export default function NewContributionPage() {
           media: [],
         }}
         submitLabel="Pubblica"
-        cancelTo="/admin"
+        cancelTo={`/giorno/${initialDate}`}
         onSubmit={handleSubmit}
       />
     </AdminShell>

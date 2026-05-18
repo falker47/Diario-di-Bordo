@@ -82,7 +82,9 @@ function EditContributionInner({ contributionId }: { contributionId: string }) {
     );
   }
 
-  const cancelTo = isSuperadmin ? "/superadmin/posts" : "/admin";
+  const cancelTo = isSuperadmin
+    ? "/superadmin/posts"
+    : `/giorno/${contribution.diary_date}`;
   const superadminEditingOthers =
     isSuperadmin && contribution.author_id !== user?.id;
 
@@ -99,7 +101,7 @@ function EditContributionInner({ contributionId }: { contributionId: string }) {
       .eq("id", id);
     if (err) throw new Error(err.message);
     push("Modifiche salvate.", "success");
-    navigate(isSuperadmin ? "/superadmin/posts" : "/admin");
+    navigate(isSuperadmin ? "/superadmin/posts" : `/giorno/${data.diary_date}`);
   }
 
   return (

@@ -13,7 +13,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!loading && isAuthenticated) {
-      navigate(isSuperadmin ? "/superadmin" : "/admin", { replace: true });
+      navigate(isSuperadmin ? "/superadmin" : "/", { replace: true });
     }
   }, [loading, isAuthenticated, isSuperadmin, navigate]);
 

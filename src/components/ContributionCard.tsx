@@ -1,6 +1,7 @@
 import type { ContributionWithAuthor } from "@/types";
 import { formatShortDate, formatTime } from "@/lib/dates";
 import { MediaGallery } from "@/components/MediaGallery";
+import { CommentSection } from "@/components/CommentSection";
 
 export function ContributionCard({ contribution }: { contribution: ContributionWithAuthor }) {
   const authorName = contribution.author?.full_name ?? "Autore sconosciuto";
@@ -29,6 +30,7 @@ export function ContributionCard({ contribution }: { contribution: ContributionW
           Modificato il {formatShortDate(editedAt)}
         </p>
       )}
+      <CommentSection contributionId={contribution.id} />
     </article>
   );
 }
