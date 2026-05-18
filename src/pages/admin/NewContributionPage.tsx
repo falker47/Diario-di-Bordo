@@ -33,6 +33,7 @@ export default function NewContributionPage() {
     const { error } = await supabase.from("contributions").insert({
       diary_date: data.diary_date,
       section: data.section,
+      title: data.title,
       text_content: data.text_content,
       media: data.media,
       author_id: user.id,
@@ -49,6 +50,7 @@ export default function NewContributionPage() {
         initial={{
           diary_date: initialDate,
           section: "quotidiani",
+          title: "",
           text_content: "",
           media: [],
         }}

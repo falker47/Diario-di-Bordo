@@ -152,7 +152,10 @@ export default function PostsPage() {
                 className="flex items-center justify-between gap-3 rounded-xl border border-hairline bg-surface px-4 py-3 shadow-card"
               >
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-primary">
+                  {c.title && (
+                    <p className="text-sm font-medium text-primary">{c.title}</p>
+                  )}
+                  <p className={`text-sm ${c.title ? "text-muted" : "font-medium text-primary"}`}>
                     {formatShortDate(c.diary_date)} · {SECTION_LABELS[c.section]}
                   </p>
                   <p className="text-xs text-muted">

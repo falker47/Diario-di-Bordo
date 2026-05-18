@@ -9,6 +9,7 @@ import { MediaUploader } from "@/components/MediaUploader";
 export type EditorInitial = {
   diary_date: string;
   section: Section;
+  title: string;
   text_content: string;
   media: MediaItem[];
 };
@@ -16,6 +17,7 @@ export type EditorInitial = {
 export type EditorSubmit = {
   diary_date: string;
   section: Section;
+  title: string | null;
   text_content: string | null;
   media: MediaItem[];
 };
@@ -36,11 +38,13 @@ export function ContributionEditor({
 
   const [diaryDate, setDiaryDate] = useState(initial.diary_date);
   const [section, setSection] = useState<Section>(initial.section);
+  const [title, setTitle] = useState(initial.title);
   const [text, setText] = useState(initial.text_content);
   const [media, setMedia] = useState<MediaItem[]>(initial.media);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
+  const trimmedTitle = title.trim();
   const trimmedText = text.trim();
   const hasContent = trimmedText.length > 0 || media.length > 0;
 
@@ -63,11 +67,16 @@ export function ContributionEditor({
       setFormError("Aggiungi almeno del testo o un media.");
       return;
     }
+    if (trimmedTitle.length > 120) {
+      setFormError("Il titolo non può superare 120 caratteri.");
+      return;
+    }
     setSubmitting(true);
     try {
       await onSubmit({
         diary_date: diaryDate,
         section,
+        title: trimmedTitle || null,
         text_content: trimmedText || null,
         media,
       });
@@ -123,6 +132,23 @@ export function ContributionEditor({
           ))}
         </div>
       </fieldset>
+
+      <div>
+        <label className="block text-sm font-medium text-primary">
+          Titolo (opzionale)
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            maxLength={120}
+            placeholder="Es. Laboratorio di pittura"
+            className="mt-1 block w-full rounded-lg border border-hairline-strong bg-surface px-3 py-2 text-sm text-primary placeholder:text-subtle shadow-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
+          />
+        </label>
+        <p className="mt-1 text-xs text-muted">
+          Un breve titolo per identificare l'attività. Puoi anche lasciarlo vuoto.
+        </p>
+      </div>
 
       <div>
         <label className="block text-sm font-medium text-primary">

@@ -9,6 +9,9 @@ export function ContributionCard({ contribution }: { contribution: ContributionW
 
   return (
     <article className="rounded-2xl border border-hairline bg-surface p-4 shadow-card">
+      {contribution.title && (
+        <h3 className="mb-1 text-base font-medium text-primary">{contribution.title}</h3>
+      )}
       <header className="flex items-baseline justify-between gap-3">
         <p className="text-sm font-semibold text-primary">{authorName}</p>
         <p className="text-xs text-muted" title={contribution.created_at}>

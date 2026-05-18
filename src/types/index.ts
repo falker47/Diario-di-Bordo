@@ -39,6 +39,7 @@ export type Contribution = {
   diary_date: string;
   author_id: string;
   section: Section;
+  title: string | null;
   text_content: string | null;
   media: MediaItem[];
   created_at: string;
@@ -68,13 +69,14 @@ export type Database = {
         Row: Contribution;
         Insert: Omit<
           Contribution,
-          "id" | "created_at" | "updated_at" | "last_edited_at" | "media"
+          "id" | "created_at" | "updated_at" | "last_edited_at" | "media" | "title"
         > & {
           id?: string;
           created_at?: string;
           updated_at?: string;
           last_edited_at?: string | null;
           media?: MediaItem[];
+          title?: string | null;
         };
         Update: Partial<Omit<Contribution, "id" | "created_at" | "author_id">>;
         Relationships: [];

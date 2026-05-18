@@ -92,6 +92,7 @@ function EditContributionInner({ contributionId }: { contributionId: string }) {
       .update({
         diary_date: data.diary_date,
         section: data.section,
+        title: data.title,
         text_content: data.text_content,
         media: data.media,
       })
@@ -118,6 +119,7 @@ function EditContributionInner({ contributionId }: { contributionId: string }) {
         initial={{
           diary_date: contribution.diary_date,
           section: contribution.section,
+          title: contribution.title ?? "",
           text_content: contribution.text_content ?? "",
           media: contribution.media ?? [],
         }}
