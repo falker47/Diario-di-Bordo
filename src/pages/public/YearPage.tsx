@@ -83,7 +83,8 @@ export default function YearPage() {
           className="rounded-lg border border-hairline bg-surface px-3 py-1.5 text-sm text-secondary shadow-card hover:bg-surface-2"
           aria-label="Anno precedente"
         >
-          ‹ Precedente
+          <span className="text-base font-bold leading-none">‹</span>
+          <span className="hidden sm:inline"> Precedente</span>
         </Link>
 
         <div className="inline-flex items-center overflow-hidden rounded-lg border border-hairline-strong bg-surface shadow-card">
@@ -97,19 +98,19 @@ export default function YearPage() {
               if (isValidYear(next)) navigate(`/anno/${next}`);
             }}
             aria-label="Scegli un anno"
-            className="w-20 border-0 bg-transparent px-3 py-1.5 text-center text-sm text-primary focus:outline-none focus:ring-2 focus:ring-accent/30 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+            className="w-20 border-0 bg-transparent px-2 py-1.5 text-center text-sm text-primary focus:outline-none focus:ring-2 focus:ring-accent/30 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
           />
           {isCurrentYear ? (
             <span
               aria-disabled="true"
-              className="border-l border-hairline bg-surface-2 px-3 py-1.5 text-sm font-medium text-subtle"
+              className="border-l border-hairline bg-surface-2 px-2.5 py-1.5 text-sm font-medium text-subtle"
             >
               Corrente
             </span>
           ) : (
             <Link
               to={`/anno/${currentYearStr}`}
-              className="border-l border-hairline px-3 py-1.5 text-sm font-medium text-secondary hover:bg-surface-2"
+              className="border-l border-hairline px-2.5 py-1.5 text-sm font-medium text-secondary hover:bg-surface-2"
             >
               Corrente
             </Link>
@@ -126,7 +127,8 @@ export default function YearPage() {
           }`}
           aria-disabled={isCurrentYear}
         >
-          Successivo ›
+          <span className="hidden sm:inline">Successivo </span>
+          <span className="text-base font-bold leading-none">›</span>
         </Link>
       </div>
 

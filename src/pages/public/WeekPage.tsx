@@ -74,7 +74,8 @@ export default function WeekPage() {
           className="rounded-lg border border-hairline bg-surface px-3 py-1.5 text-sm text-secondary shadow-card hover:bg-surface-2"
           aria-label="Settimana precedente"
         >
-          ‹ Precedente
+          <span className="text-base font-bold leading-none">‹</span>
+          <span className="hidden sm:inline"> Precedente</span>
         </Link>
 
         <div className="inline-flex items-center overflow-hidden rounded-lg border border-hairline-strong bg-surface shadow-card">
@@ -87,19 +88,19 @@ export default function WeekPage() {
               if (isValidISOWeekString(next)) navigate(`/settimana/${next}`);
             }}
             aria-label="Scegli una settimana"
-            className="border-0 bg-transparent px-3 py-1.5 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-accent/30"
+            className="w-28 border-0 bg-transparent px-2 py-1.5 text-center text-sm text-primary focus:outline-none focus:ring-2 focus:ring-accent/30"
           />
           {isCurrentWeek ? (
             <span
               aria-disabled="true"
-              className="border-l border-hairline bg-surface-2 px-3 py-1.5 text-sm font-medium text-subtle"
+              className="border-l border-hairline bg-surface-2 px-2.5 py-1.5 text-sm font-medium text-subtle"
             >
               Corrente
             </span>
           ) : (
             <Link
               to={`/settimana/${currentWeek}`}
-              className="border-l border-hairline px-3 py-1.5 text-sm font-medium text-secondary hover:bg-surface-2"
+              className="border-l border-hairline px-2.5 py-1.5 text-sm font-medium text-secondary hover:bg-surface-2"
             >
               Corrente
             </Link>
@@ -116,7 +117,8 @@ export default function WeekPage() {
           }`}
           aria-disabled={isCurrentWeek}
         >
-          Successiva ›
+          <span className="hidden sm:inline">Successiva </span>
+          <span className="text-base font-bold leading-none">›</span>
         </Link>
       </div>
 

@@ -60,7 +60,8 @@ export default function DayPage() {
           className="rounded-lg border border-hairline bg-surface px-3 py-1.5 text-sm text-secondary shadow-card hover:bg-surface-2"
           aria-label="Giorno precedente"
         >
-          ‹ Precedente
+          <span className="text-base font-bold leading-none">‹</span>
+          <span className="hidden sm:inline"> Precedente</span>
         </Link>
 
         <div className="inline-flex items-center overflow-hidden rounded-lg border border-hairline-strong bg-surface shadow-card">
@@ -73,19 +74,19 @@ export default function DayPage() {
               if (isValidISODate(next)) navigate(`/giorno/${next}`);
             }}
             aria-label="Scegli una data"
-            className="border-0 bg-transparent px-3 py-1.5 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-accent/30"
+            className="border-0 bg-transparent px-2 py-1.5 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-accent/30"
           />
           {isToday ? (
             <span
               aria-disabled="true"
-              className="border-l border-hairline bg-surface-2 px-3 py-1.5 text-sm font-medium text-subtle"
+              className="border-l border-hairline bg-surface-2 px-2.5 py-1.5 text-sm font-medium text-subtle"
             >
               Oggi
             </span>
           ) : (
             <Link
               to={`/giorno/${today}`}
-              className="border-l border-hairline px-3 py-1.5 text-sm font-medium text-secondary hover:bg-surface-2"
+              className="border-l border-hairline px-2.5 py-1.5 text-sm font-medium text-secondary hover:bg-surface-2"
             >
               Oggi
             </Link>
@@ -102,7 +103,8 @@ export default function DayPage() {
           }`}
           aria-disabled={isToday}
         >
-          Successivo ›
+          <span className="hidden sm:inline">Successivo </span>
+          <span className="text-base font-bold leading-none">›</span>
         </Link>
       </div>
 

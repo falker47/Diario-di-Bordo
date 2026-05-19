@@ -23,13 +23,14 @@ import type { Contribution } from "@/types";
 
 type IconProps = SVGProps<SVGSVGElement>;
 
-function IconMenu(props: IconProps) {
+/** Animated hamburger: 3 lines that wiggle on hover via CSS class */
+function IconMenu({ open: _open, ...props }: IconProps & { open?: boolean }) {
   return (
     <svg
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth={2}
+      strokeWidth={2.2}
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
@@ -200,52 +201,103 @@ function UserMenu() {
     }
   }
 
+  /* Derive initials for the avatar */
+  const initials = isSuperadmin
+    ? "A"
+    : (profile?.full_name ?? "U")
+        .trim()
+        .split(" ")
+        .slice(0, 2)
+        .map((w) => w[0])
+        .join("")
+        .toUpperCase();
+
   return (
     <>
+      {/* Hamburger trigger — visually prominent with accent avatar + pulse ring */}
       <button
         type="button"
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-label="Apri menu utente"
-        className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-primary hover:bg-surface-2 transition-colors"
+        style={{
+          /* Custom CSS variables consumed below */
+          // @ts-ignore
+          "--hw-accent": "rgb(var(--color-accent))",
+        }}
+        className={
+          [
+            "group relative flex items-center gap-2 rounded-xl px-2 py-1.5",
+            "text-sm font-semibold text-[rgb(var(--color-accent))]",
+            "border border-[rgb(var(--color-accent)/0.25)]",
+            "bg-[rgb(var(--color-accent)/0.08)]",
+            "hover:bg-[rgb(var(--color-accent)/0.15)] hover:border-[rgb(var(--color-accent)/0.5)]",
+            "transition-all duration-200 ease-out",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--color-accent))]",
+          ].join(" ")
+        }
       >
-        <IconMenu className="h-5 w-5" />
-        <span className="max-w-[7rem] truncate sm:max-w-[12rem]">
-          <span className="sm:hidden">{firstName}</span>
-          <span className="hidden sm:inline">{fullName}</span>
+        {/* Animated hamburger bars */}
+        <span className="hamburger-bars flex h-5 w-5 shrink-0 flex-col justify-between py-[3px] group-hover:gap-[1px] transition-all">
+          <span className="hamburger-bar block h-[2px] rounded-full bg-current origin-left transition-all duration-300" />
+          <span className="hamburger-bar block h-[2px] rounded-full bg-current transition-all duration-300" />
+          <span className="hamburger-bar block h-[2px] rounded-full bg-current origin-left transition-all duration-300" />
         </span>
+        {/* Avatar circle with initials */}
+        <span
+          aria-hidden="true"
+          className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[rgb(var(--color-accent))] text-[10px] font-bold text-white shadow-sm"
+        >
+          {initials}
+        </span>
+        {/* Name — hidden on very small screens */}
+        <span className="hidden sm:block max-w-[10rem] truncate">{fullName}</span>
       </button>
 
       {open &&
         createPortal(
           <>
-            {/* Backdrop */}
+            {/* Backdrop — fade-in */}
             <div
               aria-hidden="true"
               onClick={close}
-              className="fixed inset-0 z-40 cursor-pointer bg-black/50 backdrop-blur-sm"
+              className="fixed inset-0 z-40 cursor-pointer bg-black/50 backdrop-blur-sm animate-[fadeIn_150ms_ease-out]"
             />
 
-          {/* Drawer */}
+          {/* Drawer — slide-in from left */}
           <aside
             role="dialog"
             aria-modal="true"
             aria-label="Menu utente"
-            className="fixed left-0 top-0 z-50 flex h-[100dvh] w-[min(20rem,88vw)] flex-col border-r border-hairline bg-surface shadow-2xl"
+            className="fixed left-0 top-0 z-50 flex h-[100dvh] w-[min(22rem,90vw)] flex-col border-r border-[rgb(var(--color-accent)/0.2)] bg-surface shadow-2xl animate-[slideInLeft_200ms_cubic-bezier(0.25,0.46,0.45,0.94)]"
           >
-            {/* Header — same hamburger + name, click toggles closed */}
-            <div className="border-b border-hairline px-2 py-2">
+            {/* Drawer header — accent gradient bar + avatar + name */}
+            <div className="border-b border-[rgb(var(--color-accent)/0.2)] bg-[rgb(var(--color-accent)/0.06)] px-3 py-3">
               <button
                 type="button"
                 onClick={close}
                 aria-label="Chiudi menu"
-                className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left hover:bg-surface-2 transition-colors"
+                className="flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left hover:bg-[rgb(var(--color-accent)/0.1)] transition-colors group"
               >
-                <IconMenu className="h-5 w-5 text-muted shrink-0" />
-                <span className="truncate text-sm font-medium text-primary">
-                  <span className="sm:hidden">{firstName}</span>
-                  <span className="hidden sm:inline">{fullName}</span>
+                {/* Large avatar inside drawer */}
+                <span
+                  aria-hidden="true"
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[rgb(var(--color-accent))] text-sm font-bold text-white shadow-md"
+                >
+                  {initials}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-semibold text-primary">
+                    {fullName}
+                  </span>
+                </span>
+                {/* Animated close X */}
+                <span className="ml-auto text-muted group-hover:text-primary transition-colors" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" className="h-4 w-4">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
                 </span>
               </button>
             </div>

@@ -73,4 +73,28 @@
     box-shadow: 0 0 0 2px rgb(var(--color-app)),
       0 0 0 4px rgb(var(--color-accent) / 0.5);
   }
+
+  /* Scale the outer bars slightly on group-hover for a "stretching" feel */
+  .hamburger-bars:hover .hamburger-bar:first-child,
+  .group:hover .hamburger-bars .hamburger-bar:first-child {
+    transform: scaleX(0.7);
+  }
+  .hamburger-bars:hover .hamburger-bar:last-child,
+  .group:hover .hamburger-bars .hamburger-bar:last-child {
+    transform: scaleX(0.85);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Keyframes                                                          */
+/* ------------------------------------------------------------------ */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideInLeft {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0);     }
 }
