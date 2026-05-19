@@ -63,7 +63,7 @@ export default function DayPage() {
           ‹ Precedente
         </Link>
 
-        <div className="inline-flex flex-col overflow-hidden rounded-lg border border-hairline-strong bg-surface shadow-card">
+        <div className="inline-flex items-center overflow-hidden rounded-lg border border-hairline-strong bg-surface shadow-card">
           <input
             type="date"
             value={date}
@@ -78,16 +78,16 @@ export default function DayPage() {
           {isToday ? (
             <span
               aria-disabled="true"
-              className="border-t border-hairline px-3 py-1.5 text-center text-xs font-medium text-subtle"
+              className="border-l border-hairline bg-surface-2 px-3 py-1.5 text-sm font-medium text-subtle"
             >
-              Sei alla giornata di oggi
+              Oggi
             </span>
           ) : (
             <Link
               to={`/giorno/${today}`}
-              className="border-t border-hairline px-3 py-1.5 text-center text-xs font-medium text-secondary hover:bg-surface-2"
+              className="border-l border-hairline px-3 py-1.5 text-sm font-medium text-secondary hover:bg-surface-2"
             >
-              Vai alla giornata di oggi
+              Oggi
             </Link>
           )}
         </div>

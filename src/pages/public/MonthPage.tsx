@@ -62,6 +62,9 @@ export default function MonthPage() {
     onSwipeLeft: () => navigate(`/mese/${nextMonth}`),
   });
 
+  const currentMonthStr = toYearMonth(parseISO(todayISO()));
+  const isCurrentMonth = yyyymm === currentMonthStr;
+
   return (
     <PublicShell>
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -69,32 +72,79 @@ export default function MonthPage() {
         <ViewSwitcher anchor={{ kind: "month", value: yyyymm }} />
       </div>
 
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex items-start justify-between gap-2">
         <Link
           to={`/mese/${prevMonth}`}
-          aria-label="Mese precedente"
           className="rounded-lg border border-hairline bg-surface px-3 py-1.5 text-sm text-secondary shadow-card hover:bg-surface-2"
+          aria-label="Mese precedente"
         >
-          ‹
+          ‹ Precedente
         </Link>
-        <h1 className="text-xl font-semibold capitalize text-primary">{monthLabel}</h1>
+
+        <div className="inline-flex items-center overflow-hidden rounded-lg border border-hairline-strong bg-surface shadow-card">
+          <input
+            type="month"
+            value={yyyymm}
+            max={currentMonthStr}
+            onChange={(event) => {
+              const next = event.target.value;
+              if (isValidYearMonth(next)) navigate(`/mese/${next}`);
+            }}
+            aria-label="Scegli un mese"
+            className="border-0 bg-transparent px-3 py-1.5 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-accent/30"
+          />
+          {isCurrentMonth ? (
+            <span
+              aria-disabled="true"
+              className="border-l border-hairline bg-surface-2 px-3 py-1.5 text-sm font-medium text-subtle"
+            >
+              Corrente
+            </span>
+          ) : (
+            <Link
+              to={`/mese/${currentMonthStr}`}
+              className="border-l border-hairline px-3 py-1.5 text-sm font-medium text-secondary hover:bg-surface-2"
+            >
+              Corrente
+            </Link>
+          )}
+        </div>
+
         <Link
           to={`/mese/${nextMonth}`}
           aria-label="Mese successivo"
-          className="rounded-lg border border-hairline bg-surface px-3 py-1.5 text-sm text-secondary shadow-card hover:bg-surface-2"
+          className={`rounded-lg border border-hairline bg-surface px-3 py-1.5 text-sm shadow-card ${
+            isCurrentMonth
+              ? "pointer-events-none text-subtle"
+              : "text-secondary hover:bg-surface-2"
+          }`}
+          aria-disabled={isCurrentMonth}
         >
-          ›
+          Successivo ›
         </Link>
       </div>
+
+      <h1 className="mb-4 text-xl font-semibold capitalize text-primary">
+        {monthLabel}
+        {isCurrentMonth && <span className="ml-2 text-sm font-normal lowercase text-muted">(mese corrente)</span>}
+      </h1>
 
       {loading && <Spinner />}
       {error && <ErrorBox message={error} />}
       {!loading && !error && (
         <div className="rounded-2xl border border-hairline bg-surface p-3 shadow-card">
           <div className="mb-2 grid grid-cols-7 gap-1 text-center text-xs font-semibold text-muted">
-            {WEEKDAY_LABELS.map((label) => (
-              <div key={label}>{label}</div>
-            ))}
+            {WEEKDAY_LABELS.map((label) => {
+              const isWeekend = label === "Sab" || label === "Dom";
+              return (
+                <div 
+                  key={label}
+                  className={isWeekend ? "font-bold text-red-500 dark:text-red-500" : ""}
+                >
+                  {label}
+                </div>
+              );
+            })}
           </div>
           <div className="grid grid-cols-7 gap-1">
             {grid.map((day) => {

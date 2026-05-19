@@ -67,6 +67,9 @@ export default function YearPage() {
     onSwipeLeft: () => navigate(`/anno/${year + 1}`),
   });
 
+  const currentYearStr = String(parseISO(todayISO()).getFullYear());
+  const isCurrentYear = yyyy === currentYearStr;
+
   return (
     <PublicShell>
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -74,23 +77,63 @@ export default function YearPage() {
         <ViewSwitcher anchor={{ kind: "year", value: yyyy }} />
       </div>
 
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex items-start justify-between gap-2">
         <Link
           to={`/anno/${year - 1}`}
-          aria-label="Anno precedente"
           className="rounded-lg border border-hairline bg-surface px-3 py-1.5 text-sm text-secondary shadow-card hover:bg-surface-2"
+          aria-label="Anno precedente"
         >
-          ‹
+          ‹ Precedente
         </Link>
-        <h1 className="text-xl font-semibold text-primary">{year}</h1>
+
+        <div className="inline-flex items-center overflow-hidden rounded-lg border border-hairline-strong bg-surface shadow-card">
+          <input
+            type="number"
+            value={year}
+            min="2000"
+            max={currentYearStr}
+            onChange={(event) => {
+              const next = event.target.value;
+              if (isValidYear(next)) navigate(`/anno/${next}`);
+            }}
+            aria-label="Scegli un anno"
+            className="w-20 border-0 bg-transparent px-3 py-1.5 text-center text-sm text-primary focus:outline-none focus:ring-2 focus:ring-accent/30 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+          />
+          {isCurrentYear ? (
+            <span
+              aria-disabled="true"
+              className="border-l border-hairline bg-surface-2 px-3 py-1.5 text-sm font-medium text-subtle"
+            >
+              Corrente
+            </span>
+          ) : (
+            <Link
+              to={`/anno/${currentYearStr}`}
+              className="border-l border-hairline px-3 py-1.5 text-sm font-medium text-secondary hover:bg-surface-2"
+            >
+              Corrente
+            </Link>
+          )}
+        </div>
+
         <Link
           to={`/anno/${year + 1}`}
           aria-label="Anno successivo"
-          className="rounded-lg border border-hairline bg-surface px-3 py-1.5 text-sm text-secondary shadow-card hover:bg-surface-2"
+          className={`rounded-lg border border-hairline bg-surface px-3 py-1.5 text-sm shadow-card ${
+            isCurrentYear
+              ? "pointer-events-none text-subtle"
+              : "text-secondary hover:bg-surface-2"
+          }`}
+          aria-disabled={isCurrentYear}
         >
-          ›
+          Successivo ›
         </Link>
       </div>
+
+      <h1 className="mb-4 text-xl font-semibold text-primary">
+        {year}
+        {isCurrentYear && <span className="ml-2 text-sm font-normal text-muted">(anno corrente)</span>}
+      </h1>
 
       {loading && <Spinner />}
       {error && <ErrorBox message={error} />}
@@ -141,7 +184,12 @@ function MiniMonth({
       </Link>
       <div className="mb-1 grid grid-cols-7 gap-0.5 text-center text-[10px] font-medium text-subtle">
         {WEEKDAY_LABELS.map((d, i) => (
-          <div key={i}>{d}</div>
+          <div 
+            key={i} 
+            className={i === 5 || i === 6 ? "font-bold text-red-500 dark:text-red-500" : ""}
+          >
+            {d}
+          </div>
         ))}
       </div>
       <div className="grid grid-cols-7 gap-0.5">
