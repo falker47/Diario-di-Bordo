@@ -38,27 +38,8 @@ function MoonIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-function AutoIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.75}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      {...props}
-    >
-      <circle cx="12" cy="12" r="8" />
-      <path d="M12 4a8 8 0 0 0 0 16z" fill="currentColor" stroke="none" />
-    </svg>
-  );
-}
-
 const OPTIONS: Option[] = [
   { value: "light", label: "Chiaro", Icon: SunIcon },
-  { value: "system", label: "Automatico", Icon: AutoIcon },
   { value: "dark", label: "Scuro", Icon: MoonIcon },
 ];
 

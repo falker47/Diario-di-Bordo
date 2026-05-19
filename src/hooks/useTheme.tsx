@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from "react";
 
-export type ThemeMode = "light" | "dark" | "system";
+export type ThemeMode = "light" | "dark";
 export type ResolvedTheme = "light" | "dark";
 
 type ThemeContextValue = {
@@ -23,14 +23,14 @@ const THEME_COLOR_DARK = "#000000";
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-function readStoredMode(): ThemeMode {
+function readStoredMode(): ThemeMode | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw === "light" || raw === "dark" || raw === "system") return raw;
+    if (raw === "light" || raw === "dark") return raw;
   } catch {
     // localStorage unavailable — silent fallback.
   }
-  return "system";
+  return null;
 }
 
 function getSystemTheme(): ResolvedTheme {
@@ -40,10 +40,6 @@ function getSystemTheme(): ResolvedTheme {
     : "light";
 }
 
-function resolveTheme(mode: ThemeMode, systemTheme: ResolvedTheme): ResolvedTheme {
-  return mode === "system" ? systemTheme : mode;
-}
-
 function applyTheme(resolved: ResolvedTheme) {
   const root = document.documentElement;
   if (resolved === "dark") root.classList.add("dark");
@@ -51,8 +47,6 @@ function applyTheme(resolved: ResolvedTheme) {
   root.style.colorScheme = resolved;
 
   // Keep the mobile browser chrome in sync with the active theme.
-  // We have two media-scoped theme-color metas from index.html plus a dynamic
-  // one we tweak here to force the override when the user picks a manual mode.
   let meta = document.querySelector<HTMLMetaElement>(
     'meta[name="theme-color"][data-dynamic="true"]',
   );
@@ -66,29 +60,32 @@ function applyTheme(resolved: ResolvedTheme) {
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [mode, setModeState] = useState<ThemeMode>(() => readStoredMode());
-  const [systemTheme, setSystemTheme] = useState<ResolvedTheme>(() =>
-    getSystemTheme(),
+  // Track whether the user has made an explicit choice.
+  // While unset, we mirror the OS preference live; after the first click we lock in.
+  const [hasExplicitChoice, setHasExplicitChoice] = useState<boolean>(
+    () => readStoredMode() !== null,
+  );
+  const [mode, setModeState] = useState<ThemeMode>(
+    () => readStoredMode() ?? getSystemTheme(),
   );
 
-  // Follow system changes so "system" mode updates live.
   useEffect(() => {
+    if (hasExplicitChoice) return;
     const mql = window.matchMedia("(prefers-color-scheme: dark)");
     const listener = (e: MediaQueryListEvent) => {
-      setSystemTheme(e.matches ? "dark" : "light");
+      setModeState(e.matches ? "dark" : "light");
     };
     mql.addEventListener("change", listener);
     return () => mql.removeEventListener("change", listener);
-  }, []);
-
-  const resolved = resolveTheme(mode, systemTheme);
+  }, [hasExplicitChoice]);
 
   useEffect(() => {
-    applyTheme(resolved);
-  }, [resolved]);
+    applyTheme(mode);
+  }, [mode]);
 
   const setMode = useCallback((next: ThemeMode) => {
     setModeState(next);
+    setHasExplicitChoice(true);
     try {
       localStorage.setItem(STORAGE_KEY, next);
     } catch {
@@ -97,8 +94,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<ThemeContextValue>(
-    () => ({ mode, resolved, setMode }),
-    [mode, resolved, setMode],
+    () => ({ mode, resolved: mode, setMode }),
+    [mode, setMode],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
