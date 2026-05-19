@@ -4,22 +4,30 @@
 
 @layer base {
   :root {
-    /* Light — Apple-inspired neutral palette, warmer than pure slate.
+    /* Light — layered neutral whites (whitesmoke + ghost-white + soft slate).
        Colors expressed as "r g b" so Tailwind's <alpha-value> slot works. */
-    --color-app: 242 242 247;          /* #F2F2F7 — systemGroupedBackground */
-    --color-surface: 255 255 255;      /* cards                            */
-    --color-surface-2: 248 248 250;    /* subtle hover / nested            */
-    --color-surface-3: 229 229 234;    /* badges, input bg                 */
+    --color-app: 240 241 244;          /* #F0F1F4 — cool whitesmoke base   */
+    --color-surface: 255 255 255;      /* clean white cards                */
+    --color-surface-2: 247 248 251;    /* #F7F8FB — ghost-white nested     */
+    --color-surface-3: 226 229 234;    /* #E2E5EA — soft slate badge       */
     --color-inverted: 28 28 30;        /* primary CTA bg                   */
     --color-on-inverted: 255 255 255;  /* text on CTA                      */
-    --color-hairline: 229 229 234;     /* subtle separators                */
-    --color-hairline-strong: 209 209 214; /* input borders                 */
+    --color-hairline: 224 227 232;     /* neutral separator                */
+    --color-hairline-strong: 202 206 213; /* input borders                 */
     --color-text-primary: 29 29 31;    /* label / heading                  */
     --color-text-secondary: 60 60 67;  /* body                             */
     --color-text-muted: 99 99 102;     /* metadata                         */
     --color-subtle: 174 174 178;       /* placeholder, tertiary            */
     --color-text-subtle: 174 174 178;
     --color-accent: 10 132 255;        /* systemBlue                       */
+    /* Ambient gradient tints — used by the body background. */
+    --color-app-tint-a: 248 250 253;   /* #F8FAFD — top-left ghost-white   */
+    --color-app-tint-b: 230 234 240;   /* #E6EAF0 — bottom-right cool      */
+    --bg-image:
+      radial-gradient(ellipse 80% 60% at 0% 0%,
+        rgb(var(--color-app-tint-a) / 0.7) 0%, transparent 60%),
+      radial-gradient(ellipse 90% 70% at 100% 100%,
+        rgb(var(--color-app-tint-b) / 0.5) 0%, transparent 55%);
     color-scheme: light;
   }
 
@@ -38,6 +46,7 @@
     --color-text-muted: 174 174 178;   /* metadata                         */
     --color-text-subtle: 124 124 128;
     --color-accent: 10 132 255;
+    --bg-image: none;
     color-scheme: dark;
   }
 
@@ -49,6 +58,8 @@
 
   body {
     background-color: rgb(var(--color-app));
+    background-image: var(--bg-image);
+    background-attachment: fixed;
     color: rgb(var(--color-text-primary));
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

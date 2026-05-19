@@ -34,7 +34,7 @@ export default {
         accent: "rgb(var(--color-accent) / <alpha-value>)",
       },
       boxShadow: {
-        card: "0 1px 2px rgb(0 0 0 / 0.04), 0 1px 3px rgb(0 0 0 / 0.03)",
+        card: "0 1px 2px rgb(0 0 0 / 0.05), 0 2px 6px rgb(0 0 0 / 0.04), 0 8px 24px rgb(0 0 0 / 0.025)",
       },
     },
   },
