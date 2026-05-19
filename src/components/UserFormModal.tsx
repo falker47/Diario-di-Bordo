@@ -144,7 +144,7 @@ export function UserFormModal({
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value.toLowerCase())}
-            pattern="[a-z0-9_]{3,20}"
+            pattern="[a-z0-9_.]{3,30}"
             autoCapitalize="none"
             autoCorrect="off"
             spellCheck={false}
@@ -152,7 +152,7 @@ export function UserFormModal({
             className="mt-1 block w-full rounded-lg border border-hairline-strong bg-surface px-3 py-2 text-sm text-primary placeholder:text-subtle shadow-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
           />
           <span className="mt-1 block text-xs text-muted">
-            3-20 caratteri, lettere minuscole, numeri, underscore.
+            3-30 caratteri, lettere minuscole, numeri, underscore, punto.
           </span>
         </label>
 

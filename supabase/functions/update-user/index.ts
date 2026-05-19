@@ -20,7 +20,7 @@ const jsonResponse = (body: unknown, status = 200) =>
   });
 
 const USERNAME_EMAIL_DOMAIN = "@diario.internal";
-const USERNAME_RE = /^[a-z0-9_]{3,20}$/;
+const USERNAME_RE = /^[a-z0-9_.]{3,30}$/;
 
 function escapeLike(s: string): string {
   return s.replace(/[\\%_]/g, (m) => `\\${m}`);
@@ -100,8 +100,7 @@ Deno.serve(async (req: Request) => {
     if (!USERNAME_RE.test(newUsername)) {
       return jsonResponse(
         {
-          error:
-            "Username non valido. Usa 3-20 caratteri: lettere minuscole, numeri, underscore.",
+          error: "Username non valido. Usa 3-30 caratteri: lettere minuscole, numeri, underscore, punto.",
         },
         400,
       );
