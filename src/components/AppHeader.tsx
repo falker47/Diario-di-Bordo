@@ -23,26 +23,6 @@ import type { Contribution } from "@/types";
 
 type IconProps = SVGProps<SVGSVGElement>;
 
-/** Animated hamburger: 3 lines that wiggle on hover via CSS class */
-function IconMenu({ open: _open, ...props }: IconProps & { open?: boolean }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2.2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      {...props}
-    >
-      <line x1="4" y1="6" x2="20" y2="6" />
-      <line x1="4" y1="12" x2="20" y2="12" />
-      <line x1="4" y1="18" x2="20" y2="18" />
-    </svg>
-  );
-}
-
 function IconPlus(props: IconProps) {
   return (
     <svg
@@ -135,10 +115,6 @@ function UserMenu() {
   const fullName = isSuperadmin
     ? "Amministrazione"
     : profile?.full_name ?? "Utente";
-
-  const firstName = isSuperadmin
-    ? "Amministrazione"
-    : profile?.full_name?.trim().split(" ")[0] ?? "Utente";
 
   // Per il superadmin la lista non si popola (l'account non ha contributi).
   const authorId = !isSuperadmin && user ? user.id : null;
