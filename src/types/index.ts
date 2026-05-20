@@ -5,7 +5,7 @@ export const SECTIONS: readonly Section[] = ["quotidiani", "speciali", "equipe"]
 export const SECTION_LABELS: Record<Section, string> = {
   quotidiani: "Quotidiani",
   speciali: "Speciali",
-  equipe: "Equipe",
+  equipe: "Équipe",
 };
 
 export type ImageMediaItem = {

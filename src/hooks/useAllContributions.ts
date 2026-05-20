@@ -7,7 +7,14 @@ export type ContributionFilters = {
   section?: Section;
   dateFrom?: string;
   dateTo?: string;
+  searchQuery?: string;
 };
+
+// PostgREST `or()` usa `,` come separatore e `*` come wildcard.
+// Sanitizziamo i caratteri che possono rompere il parser.
+function sanitizeSearchTerm(raw: string): string {
+  return raw.trim().replace(/[,()*]/g, "");
+}
 
 export const PAGE_SIZE = 50;
 
@@ -39,6 +46,14 @@ export function useAllContributions(filters: ContributionFilters, page: number) 
       if (filters.section) query = query.eq("section", filters.section);
       if (filters.dateFrom) query = query.gte("diary_date", filters.dateFrom);
       if (filters.dateTo) query = query.lte("diary_date", filters.dateTo);
+      if (filters.searchQuery) {
+        const term = sanitizeSearchTerm(filters.searchQuery);
+        if (term.length > 0) {
+          query = query.or(
+            `text_content.ilike.*${term}*,title.ilike.*${term}*`,
+          );
+        }
+      }
 
       const { data: rows, error: err, count } = await query.returns<
         ContributionWithAuthor[]
@@ -64,6 +79,7 @@ export function useAllContributions(filters: ContributionFilters, page: number) 
     filters.section,
     filters.dateFrom,
     filters.dateTo,
+    filters.searchQuery,
     page,
     tick,
   ]);

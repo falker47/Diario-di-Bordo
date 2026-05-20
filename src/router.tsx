@@ -6,11 +6,11 @@ import DayPage from "@/pages/public/DayPage";
 import WeekPage from "@/pages/public/WeekPage";
 import MonthPage from "@/pages/public/MonthPage";
 import YearPage from "@/pages/public/YearPage";
+import SectionPage from "@/pages/public/SectionPage";
 
 // Code-split: le pagine admin/superadmin vengono caricate al primo accesso.
 // La vista pubblica (entry point più comune) resta nel bundle principale.
 const LoginPage = lazy(() => import("@/pages/admin/LoginPage"));
-const DashboardPage = lazy(() => import("@/pages/admin/DashboardPage"));
 const NewContributionPage = lazy(
   () => import("@/pages/admin/NewContributionPage"),
 );
@@ -67,6 +67,7 @@ export const router = createBrowserRouter([
   { path: "/settimana/:isoWeek", element: <WeekPage /> },
   { path: "/mese/:yyyymm", element: <MonthPage /> },
   { path: "/anno/:yyyy", element: <YearPage /> },
+  { path: "/categoria/:section", element: <SectionPage /> },
 
   {
     path: "/admin/login",
@@ -76,16 +77,7 @@ export const router = createBrowserRouter([
       </LazyRoute>
     ),
   },
-  {
-    path: "/admin",
-    element: (
-      <RequireAuth>
-        <LazyRoute>
-          <DashboardPage />
-        </LazyRoute>
-      </RequireAuth>
-    ),
-  },
+  { path: "/admin", element: <HomeRedirect /> },
   {
     path: "/admin/nuovo",
     element: (

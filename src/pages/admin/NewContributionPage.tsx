@@ -8,6 +8,11 @@ import {
   type EditorSubmit,
 } from "@/components/ContributionEditor";
 import { isValidISODate, todayISO } from "@/lib/dates";
+import { SECTIONS, type Section } from "@/types";
+
+function isSection(value: string | null): value is Section {
+  return !!value && (SECTIONS as readonly string[]).includes(value);
+}
 
 export default function NewContributionPage() {
   const { user, isSuperadmin } = useAuth();
@@ -27,6 +32,10 @@ export default function NewContributionPage() {
 
   const queryDate = params.get("date") ?? "";
   const initialDate = isValidISODate(queryDate) ? queryDate : todayISO();
+  const querySection = params.get("section");
+  const initialSection: Section = isSection(querySection)
+    ? querySection
+    : "quotidiani";
 
   async function handleSubmit(data: EditorSubmit) {
     if (!user) throw new Error("Sessione mancante.");
@@ -49,7 +58,7 @@ export default function NewContributionPage() {
       <ContributionEditor
         initial={{
           diary_date: initialDate,
-          section: "quotidiani",
+          section: initialSection,
           title: "",
           text_content: "",
           media: [],

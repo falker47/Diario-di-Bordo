@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { AdminShell } from "@/components/AdminShell";
 import { ListSkeleton } from "@/components/ui/Skeleton";
@@ -19,7 +19,20 @@ export default function PostsPage() {
   const [section, setSection] = useState<Section | "">("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(0);
+
+  // Debounce per la search (300ms).
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  // Reset pagina quando la search applicata cambia.
+  useEffect(() => {
+    setPage(0);
+  }, [debouncedSearch]);
 
   const filters = useMemo<ContributionFilters>(
     () => ({
@@ -27,8 +40,9 @@ export default function PostsPage() {
       section: section || undefined,
       dateFrom: dateFrom || undefined,
       dateTo: dateTo || undefined,
+      searchQuery: debouncedSearch || undefined,
     }),
-    [authorId, section, dateFrom, dateTo],
+    [authorId, section, dateFrom, dateTo, debouncedSearch],
   );
 
   const {
@@ -40,13 +54,17 @@ export default function PostsPage() {
   const { data: users } = useAllUsers();
 
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
-  const hasFilters = Boolean(authorId || section || dateFrom || dateTo);
+  const hasFilters = Boolean(
+    authorId || section || dateFrom || dateTo || debouncedSearch,
+  );
 
   function resetFilters() {
     setAuthorId("");
     setSection("");
     setDateFrom("");
     setDateTo("");
+    setSearch("");
+    setDebouncedSearch("");
     setPage(0);
   }
 
@@ -71,7 +89,33 @@ export default function PostsPage() {
         {hasFilters && " con i filtri correnti"}.
       </p>
 
-      <div className="mb-4 grid grid-cols-1 gap-3 rounded-xl border border-hairline bg-surface p-4 shadow-card sm:grid-cols-4">
+      <div className="mb-4 space-y-3 rounded-xl border border-hairline bg-surface p-4 shadow-card">
+        <label className="relative block">
+          <span className="sr-only">Cerca nei contributi</span>
+          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1.8}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-4 w-4"
+              aria-hidden="true"
+            >
+              <circle cx="11" cy="11" r="7" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </span>
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Cerca nel testo o nel titolo…"
+            className="block w-full rounded-lg border border-hairline-strong bg-surface py-2 pl-9 pr-3 text-sm text-primary placeholder:text-subtle shadow-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
+          />
+        </label>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-4">
         <label className="flex flex-col text-xs font-medium text-secondary">
           Autore
           <select
@@ -131,6 +175,7 @@ export default function PostsPage() {
             Pulisci filtri
           </button>
         )}
+        </div>
       </div>
 
       {loading && <ListSkeleton count={5} />}

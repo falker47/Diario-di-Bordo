@@ -6,16 +6,10 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import { Link, useNavigate } from "react-router-dom";
-import { formatLongDate, todayISO } from "@/lib/dates";
+import { todayISO } from "@/lib/dates";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/hooks/useAuth";
-import { useMyContributions } from "@/hooks/useMyContributions";
-import { useToast } from "@/hooks/useToast";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { bestEffortCleanupMedia } from "@/lib/cloudinary";
-import { supabase } from "@/lib/supabase";
-import { SECTION_LABELS } from "@/types";
-import type { Contribution } from "@/types";
+import { SECTIONS, SECTION_LABELS } from "@/types";
 
 /* ------------------------------------------------------------------ */
 /*  Inline icons (no extra dependencies)                              */
@@ -41,45 +35,6 @@ function IconPlus(props: IconProps) {
   );
 }
 
-function IconPencil(props: IconProps) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.8}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      {...props}
-    >
-      <path d="M12 20h9" />
-      <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
-    </svg>
-  );
-}
-
-function IconTrash(props: IconProps) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.8}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      {...props}
-    >
-      <polyline points="3 6 5 6 21 6" />
-      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-      <path d="M10 11v6" />
-      <path d="M14 11v6" />
-      <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
-    </svg>
-  );
-}
-
 function IconLogout(props: IconProps) {
   return (
     <svg
@@ -99,26 +54,54 @@ function IconLogout(props: IconProps) {
   );
 }
 
+function IconFolder(props: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      {...props}
+    >
+      <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+    </svg>
+  );
+}
+
+function IconHome(props: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      {...props}
+    >
+      <path d="M3 10.5 12 3l9 7.5" />
+      <path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5" />
+    </svg>
+  );
+}
+
 /* ------------------------------------------------------------------ */
 /*  UserMenu — hamburger + sliding drawer (ChatGPT/Claude-inspired)   */
 /* ------------------------------------------------------------------ */
 
 function UserMenu() {
-  const { user, profile, isSuperadmin, signOut } = useAuth();
+  const { profile, isSuperadmin, signOut } = useAuth();
   const navigate = useNavigate();
-  const { push } = useToast();
 
   const [open, setOpen] = useState(false);
-  const [pendingDelete, setPendingDelete] = useState<Contribution | null>(null);
-  const [deleting, setDeleting] = useState(false);
 
   const fullName = isSuperadmin
     ? "Amministrazione"
     : profile?.full_name ?? "Utente";
-
-  // Per il superadmin la lista non si popola (l'account non ha contributi).
-  const authorId = !isSuperadmin && user ? user.id : null;
-  const { data, loading, error, refresh } = useMyContributions(authorId, 50);
 
   const close = useCallback(() => setOpen(false), []);
 
@@ -141,40 +124,6 @@ function UserMenu() {
     close();
     await signOut();
     navigate("/admin/login");
-  }
-
-  async function handleConfirmDelete() {
-    if (!pendingDelete) return;
-    setDeleting(true);
-    try {
-      const mediaCount = pendingDelete.media?.length ?? 0;
-      const cleanup =
-        mediaCount > 0
-          ? await bestEffortCleanupMedia(pendingDelete.media)
-          : { cleaned: 0, failed: 0 };
-
-      const { error: deleteError } = await supabase
-        .from("contributions")
-        .delete()
-        .eq("id", pendingDelete.id);
-      if (deleteError) throw new Error(deleteError.message);
-
-      if (cleanup.failed > 0) {
-        push(
-          `Contributo eliminato. ${cleanup.failed} media non rimossi da Cloudinary.`,
-          "info",
-        );
-      } else {
-        push("Contributo eliminato.", "success");
-      }
-      setPendingDelete(null);
-      refresh();
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "Errore sconosciuto";
-      push(`Errore eliminazione: ${msg}`, "error");
-    } finally {
-      setDeleting(false);
-    }
   }
 
   /* Derive initials for the avatar */
@@ -241,177 +190,142 @@ function UserMenu() {
               className="fixed inset-0 z-40 cursor-pointer bg-black/50 backdrop-blur-sm animate-[fadeIn_150ms_ease-out]"
             />
 
-          {/* Drawer — slide-in from left */}
-          <aside
-            role="dialog"
-            aria-modal="true"
-            aria-label="Menu utente"
-            className="fixed left-0 top-0 z-50 flex h-[100dvh] w-[min(22rem,90vw)] flex-col border-r border-[rgb(var(--color-accent)/0.2)] bg-surface shadow-2xl animate-[slideInLeft_200ms_cubic-bezier(0.25,0.46,0.45,0.94)]"
-          >
-            {/* Drawer header — accent gradient bar + avatar + name */}
-            <div className="border-b border-[rgb(var(--color-accent)/0.2)] bg-[rgb(var(--color-accent)/0.06)] px-3 py-3">
-              <button
-                type="button"
-                onClick={close}
-                aria-label="Chiudi menu"
-                className="flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left hover:bg-[rgb(var(--color-accent)/0.1)] transition-colors group"
-              >
-                {/* Large avatar inside drawer */}
-                <span
-                  aria-hidden="true"
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[rgb(var(--color-accent))] text-sm font-bold text-white shadow-md"
-                >
-                  {initials}
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-semibold text-primary">
-                    {fullName}
-                  </span>
-                </span>
-                {/* Animated close X */}
-                <span className="ml-auto text-muted group-hover:text-primary transition-colors" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" className="h-4 w-4">
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
-                </span>
-              </button>
-            </div>
-
-            {!isSuperadmin ? (
-              <>
-                {/* Primary action — new contribution */}
-                <div className="px-3 pt-3">
-                  <Link
-                    to={`/admin/nuovo?date=${todayISO()}`}
-                    onClick={close}
-                    className="flex items-center justify-center gap-2 rounded-xl bg-inverted px-4 py-3 text-sm font-semibold text-on-inverted shadow-sm hover:opacity-90 transition-opacity"
-                  >
-                    <IconPlus className="h-4 w-4" />
-                    Nuovo contributo
-                  </Link>
-                </div>
-
-                {/* My contributions */}
-                <div className="flex-1 overflow-y-auto px-2 pt-4 pb-3">
-                  <p className="px-2 pb-2 text-[11px] font-medium uppercase tracking-wider text-subtle">
-                    I miei contributi
-                  </p>
-                  {loading && (
-                    <p className="px-2 py-2 text-sm text-muted">Caricamento…</p>
-                  )}
-                  {!loading && error && (
-                    <p className="px-2 py-2 text-sm text-red-600 dark:text-red-400">
-                      {error}
-                    </p>
-                  )}
-                  {!loading && !error && data.length === 0 && (
-                    <p className="px-2 py-3 text-sm text-muted">
-                      Non hai ancora contributi.
-                    </p>
-                  )}
-                  {!loading && !error && data.length > 0 && (
-                    <ul className="space-y-0.5">
-                      {data.map((c) => {
-                        const label = c.title ?? formatLongDate(c.diary_date);
-                        return (
-                          <li
-                            key={c.id}
-                            className="group flex items-center rounded-lg hover:bg-surface-2 transition-colors"
-                          >
-                            <Link
-                              to={`/giorno/${c.diary_date}`}
-                              onClick={close}
-                              className="min-w-0 flex-1 px-2.5 py-2"
-                              title={label}
-                            >
-                              <p className="truncate text-sm text-primary">
-                                {label}
-                              </p>
-                              <p className="truncate text-xs text-muted">
-                                {formatLongDate(c.diary_date)} ·{" "}
-                                {SECTION_LABELS[c.section]}
-                              </p>
-                            </Link>
-                            <div className="flex shrink-0 items-center gap-0.5 pr-1.5">
-                              <Link
-                                to={`/admin/modifica/${c.id}`}
-                                onClick={close}
-                                aria-label={`Modifica ${label}`}
-                                className="rounded-md p-1.5 text-muted hover:bg-surface-3 hover:text-primary transition-colors"
-                              >
-                                <IconPencil className="h-4 w-4" />
-                              </Link>
-                              <button
-                                type="button"
-                                onClick={() => setPendingDelete(c)}
-                                aria-label={`Elimina ${label}`}
-                                className="rounded-md p-1.5 text-muted hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/40 dark:hover:text-red-400 transition-colors"
-                              >
-                                <IconTrash className="h-4 w-4" />
-                              </button>
-                            </div>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  )}
-                </div>
-              </>
-            ) : (
-              <div className="flex-1 space-y-2 overflow-y-auto px-3 py-4">
-                <Link
-                  to="/superadmin"
+            {/* Drawer — slide-in from left */}
+            <aside
+              role="dialog"
+              aria-modal="true"
+              aria-label="Menu utente"
+              className="fixed left-0 top-0 z-50 flex h-[100dvh] w-[min(22rem,90vw)] flex-col border-r border-[rgb(var(--color-accent)/0.2)] bg-surface shadow-2xl animate-[slideInLeft_200ms_cubic-bezier(0.25,0.46,0.45,0.94)]"
+            >
+              {/* Drawer header — accent gradient bar + avatar + name */}
+              <div className="border-b border-[rgb(var(--color-accent)/0.2)] bg-[rgb(var(--color-accent)/0.06)] px-3 py-3">
+                <button
+                  type="button"
                   onClick={close}
-                  className="block rounded-lg bg-surface-2 px-3 py-2.5 text-sm font-medium text-primary hover:bg-surface-3 transition-colors"
+                  aria-label="Chiudi menu"
+                  className="flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left hover:bg-[rgb(var(--color-accent)/0.1)] transition-colors group"
                 >
-                  Pannello amministrazione
-                </Link>
-                <p className="px-1 text-xs text-muted">
-                  L'account amministratore non può creare contributi.
-                </p>
+                  {/* Large avatar inside drawer */}
+                  <span
+                    aria-hidden="true"
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[rgb(var(--color-accent))] text-sm font-bold text-white shadow-md"
+                  >
+                    {initials}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-semibold text-primary">
+                      {fullName}
+                    </span>
+                  </span>
+                  {/* Animated close X */}
+                  <span
+                    className="ml-auto text-muted group-hover:text-primary transition-colors"
+                    aria-hidden="true"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                      strokeLinecap="round"
+                      className="h-4 w-4"
+                    >
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                  </span>
+                </button>
               </div>
-            )}
 
-            {/* Footer — logout */}
-            <div className="border-t border-hairline p-2">
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-secondary hover:bg-surface-2 transition-colors"
-              >
-                <IconLogout className="h-4 w-4" />
-                Esci
-              </button>
-            </div>
-          </aside>
+              {!isSuperadmin ? (
+                <>
+                  {/* Primary action — new contribution */}
+                  <div className="px-3 pt-3">
+                    <Link
+                      to={`/admin/nuovo?date=${todayISO()}`}
+                      onClick={close}
+                      className="flex items-center justify-center gap-2 rounded-xl bg-inverted px-4 py-3 text-sm font-semibold text-on-inverted shadow-sm hover:opacity-90 transition-opacity"
+                    >
+                      <IconPlus className="h-4 w-4" />
+                      Nuovo contributo
+                    </Link>
+                  </div>
+
+                  {/* Sections — three big buttons */}
+                  <div className="flex-1 overflow-y-auto px-3 pt-4 pb-3">
+                    <p className="px-1 pb-2 text-[11px] font-medium uppercase tracking-wider text-subtle">
+                      Navigazione
+                    </p>
+                    <ul className="space-y-1.5 pb-3">
+                      <li>
+                        <Link
+                          to={`/giorno/${todayISO()}`}
+                          onClick={close}
+                          className="flex items-center gap-3 rounded-xl border border-hairline bg-surface px-3 py-3 text-sm font-medium text-primary shadow-sm hover:border-[rgb(var(--color-accent)/0.5)] hover:bg-[rgb(var(--color-accent)/0.06)] transition-colors"
+                        >
+                          <IconHome className="h-4 w-4 text-[rgb(var(--color-accent))]" />
+                          Home
+                        </Link>
+                      </li>
+                    </ul>
+
+                    <p className="px-1 pb-2 text-[11px] font-medium uppercase tracking-wider text-subtle">
+                      Categorie
+                    </p>
+                    <ul className="space-y-1.5">
+                      {SECTIONS.map((s) => (
+                        <li key={s}>
+                          <Link
+                            to={`/categoria/${s}`}
+                            onClick={close}
+                            className="flex items-center gap-3 rounded-xl border border-hairline bg-surface px-3 py-3 text-sm font-medium text-primary shadow-sm hover:border-[rgb(var(--color-accent)/0.5)] hover:bg-[rgb(var(--color-accent)/0.06)] transition-colors"
+                          >
+                            <IconFolder className="h-4 w-4 text-[rgb(var(--color-accent))]" />
+                            {SECTION_LABELS[s]}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </>
+              ) : (
+                <div className="flex-1 space-y-2 overflow-y-auto px-3 py-4">
+                  <Link
+                    to={`/giorno/${todayISO()}`}
+                    onClick={close}
+                    className="flex items-center gap-3 rounded-lg bg-surface-2 px-3 py-2.5 text-sm font-medium text-primary hover:bg-surface-3 transition-colors"
+                  >
+                    <IconHome className="h-4 w-4 text-[rgb(var(--color-accent))]" />
+                    Home
+                  </Link>
+                  <Link
+                    to="/superadmin"
+                    onClick={close}
+                    className="block rounded-lg bg-surface-2 px-3 py-2.5 text-sm font-medium text-primary hover:bg-surface-3 transition-colors"
+                  >
+                    Pannello amministrazione
+                  </Link>
+                  <p className="px-1 text-xs text-muted">
+                    L'account amministratore non può creare contributi.
+                  </p>
+                </div>
+              )}
+
+              {/* Footer — logout */}
+              <div className="border-t border-hairline p-2">
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-secondary hover:bg-surface-2 transition-colors"
+                >
+                  <IconLogout className="h-4 w-4" />
+                  Esci
+                </button>
+              </div>
+            </aside>
           </>,
           document.body,
         )}
-
-      {createPortal(
-        <ConfirmDialog
-          open={pendingDelete !== null}
-          title="Eliminare il contributo?"
-          message={
-            pendingDelete
-              ? `Stai per eliminare il contributo del ${formatLongDate(
-                  pendingDelete.diary_date,
-                )} (${SECTION_LABELS[pendingDelete.section]}). L'azione non si può annullare${
-                  (pendingDelete.media?.length ?? 0) > 0
-                    ? `: anche ${pendingDelete.media.length} media verranno rimossi.`
-                    : "."
-                }`
-              : ""
-          }
-          confirmLabel="Elimina"
-          destructive
-          busy={deleting}
-          onCancel={() => !deleting && setPendingDelete(null)}
-          onConfirm={handleConfirmDelete}
-        />,
-        document.body,
-      )}
     </>
   );
 }
