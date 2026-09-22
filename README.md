@@ -6,6 +6,8 @@
 
 ![CI](https://github.com/falker47/Diario-di-Bordo/actions/workflows/ci.yml/badge.svg)
 
+![Diario di Bordo — preview dell'interfaccia](docs/diario-di-bordo-preview.svg)
+
 ## Cosa fa
 
 ### Consultazione pubblica
