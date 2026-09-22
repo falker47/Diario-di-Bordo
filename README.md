@@ -1,146 +1,165 @@
 # 📖 Diario di Bordo
 
-> Webapp mobile-first progettata per digitalizzare e semplificare la gestione del diario di bordo all'interno di una comunità educativa.
+> Web app mobile-first per digitalizzare il diario di bordo di una comunità educativa, con consultazione pubblica, area educatori e amministrazione separata.
 
-Una piattaforma moderna, sicura e facile da usare per educatori e amministratori, con supporto per contenuti multimediali e gestione avanzata degli utenti.
+[🌐 Applicazione](https://diariodibordo.netlify.app) · [🔒 Modello di sicurezza](docs/security-model.md) · [📘 Guida committente](docs/guida-committente.md)
 
-## ✨ Funzionalità Principali
+![CI](https://github.com/falker47/Diario-di-Bordo/actions/workflows/ci.yml/badge.svg)
 
-- 👁️ **Vista Pubblica (Read-Only):** Consultazione agevole dei contributi filtrabili per giorno, settimana, mese e anno.
-- ✍️ **Area Educatori (`/admin`):** Spazio riservato dove gli educatori possono creare, modificare ed eliminare i propri contributi, allegando anche foto e video.
-- 🛡️ **Area Superadmin (`/superadmin`):** Pannello di controllo completo per la gestione degli utenti (creazione, disattivazione) e la moderazione/correzione di qualsiasi contributo.
-- 📱 **Design Mobile-First:** Interfaccia utente ottimizzata per l'uso in mobilità da smartphone e tablet.
-- ☁️ **Media Management Ottimizzato:** Gestione automatizzata degli allegati con caricamento sicuro su Cloudinary e pulizia automatica alla cancellazione tramite Edge Functions.
+![Diario di Bordo — preview dell'interfaccia](docs/diario-di-bordo-preview.svg)
 
----
+## Cosa fa
 
-## 🛠️ Stack Tecnologico
+### Consultazione pubblica
 
-- **Frontend:** React 18 + Vite + TypeScript + Tailwind CSS
-- **Database & Auth:** Supabase (PostgreSQL) con RLS (Row Level Security)
-- **Media Storage:** Cloudinary (free tier 25 GB)
-- **Serverless:** Supabase Edge Functions (Deno)
-- **Hosting:** Netlify (Frontend)
+- navigazione del diario per **giorno, settimana, mese e anno**;
+- viste per categoria;
+- lettura di contributi, allegati multimediali e commenti;
+- interfaccia responsive pensata prima di tutto per smartphone e tablet.
 
----
+### Area educatori
 
-## 🚀 Sviluppo Locale
+Gli educatori accedono con credenziali personali e possono:
 
-### Prerequisiti
-- Node.js (v18+)
-- npm o yarn
+- creare contributi con titolo, testo, foto e video;
+- modificare i propri contributi;
+- pubblicare ed eliminare i propri commenti;
+- usare la stessa interfaccia pubblica mantenendo le azioni di scrittura riservate agli utenti autenticati.
+
+### Area superadmin
+
+Il superadmin dispone di un pannello separato per:
+
+- creare, aggiornare, disattivare e riattivare gli account degli educatori;
+- cercare e filtrare tutti i contributi;
+- correggere/moderare qualsiasi contributo;
+- moderare i commenti.
+
+Le autorizzazioni non dipendono soltanto dall'interfaccia: il database applica **Row Level Security** e le operazioni privilegiate passano da **Supabase Edge Functions**.
+
+## Architettura
+
+| Livello | Tecnologia | Responsabilità |
+| --- | --- | --- |
+| Frontend | React 18, TypeScript, Vite, Tailwind CSS | UI, routing, viste temporali, editor e upload |
+| Auth + database | Supabase Auth + PostgreSQL | sessioni, profili, contributi, commenti |
+| Autorizzazione | Supabase RLS | enforcement delle regole di lettura/scrittura |
+| Operazioni privilegiate | Supabase Edge Functions (Deno) | gestione utenti e operazioni server-side |
+| Media | Cloudinary | upload e delivery di immagini/video |
+| Hosting | Netlify | build e hosting della SPA |
+| Verifica | GitHub Actions | typecheck e production build |
+
+### Flusso essenziale
+
+~~~text
+Browser
+  ├─ Supabase anon client ──> Auth + PostgreSQL (RLS)
+  ├─ unsigned upload ───────> Cloudinary
+  └─ authenticated invoke ─> Supabase Edge Functions
+                                  ├─ service role -> Supabase
+                                  └─ server secret -> Cloudinary
+~~~
+
+Il modello completo — ruoli, policy RLS, segreti e trade-off della cancellazione media — è documentato in [docs/security-model.md](docs/security-model.md).
+
+## Confini e limitazioni
+
+Questa repository documenta esplicitamente i limiti attuali invece di presentarli come proprietà già risolte:
+
+- i contenuti del diario e i dati profilo usati per mostrare l'autore sono **pubblicamente leggibili per design**;
+- gli upload Cloudinary usano un preset unsigned, che deve essere ristretto e monitorato dal lato Cloudinary;
+- la Edge Function <code>delete-media</code> verifica che il chiamante sia autenticato, ma nel modello corrente **non verifica l'ownership del media**: è un trade-off deliberato per il contesto small-team/non-adversarial e va irrigidito prima di usare l'app in uno scenario ostile;
+- la UI corrente espone creazione e modifica dei contributi; la policy RLS consente anche la cancellazione del proprio record, ma non viene presentata qui come feature utente finché non esiste un flusso UI completo e verificato.
+
+## Sviluppo locale
+
+### Requisiti
+
+- Node.js 20 consigliato;
+- npm;
+- un progetto Supabase;
+- un account Cloudinary con upload preset dedicato.
 
 ### Setup
 
-1. **Installa le dipendenze:**
-   ```bash
-   npm install
-   ```
+~~~bash
+npm ci
+cp .env.example .env.local
+npm run dev
+~~~
 
-2. **Configura le variabili d'ambiente:**
-   Copia il file `.env.example` e rinominalo in `.env.local`, quindi compila i 4 valori `VITE_*`.
+Variabili browser richieste:
 
-3. **Avvia il server di sviluppo:**
-   ```bash
-   npm run dev
-   ```
-   L'app sarà disponibile all'indirizzo `http://localhost:5173`.
+~~~text
+VITE_SUPABASE_URL
+VITE_SUPABASE_ANON_KEY
+VITE_CLOUDINARY_CLOUD_NAME
+VITE_CLOUDINARY_UPLOAD_PRESET
+~~~
 
-4. **Comandi aggiuntivi utili:**
-   ```bash
-   npm run typecheck    # Verifica i tipi TypeScript
-   npm run build        # Crea la build per la produzione
-   ```
+I valori reali non vanno committati.
 
----
+### Verifica locale
 
-## 📜 Script Utili
+~~~bash
+npm run typecheck
+npm run build
+~~~
 
-Gli script server-side leggono le configurazioni da `.env.scripts.local` (file gitignored). Assicurati che contenga: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_ANON_KEY`, `SUPERADMIN_EMAIL`, `SUPERADMIN_PASSWORD`.
+La stessa verifica viene eseguita automaticamente da GitHub Actions su pull request e su ogni push a <code>main</code>.
 
-| Comando | Descrizione |
-|---|---|
-| `npm run seed` | Popola il DB con un utente di test (`mario` / `mario2026`) e 6 contributi realistici |
-| `npm run seed:down` | Rimuove utente, profilo e contributi generati dal seed |
-| `npm run test:delete-media` | Smoke test della Edge Function `delete-media` (4 casi di test) |
-| `npm run test:users -- --help` | Tool CLI per invocare le Edge Functions di gestione utenti |
+## Database ed Edge Functions
 
----
+Le migration sono versionate in [supabase/migrations/](supabase/migrations/).
 
-## 📦 Deploy
+Le Edge Functions attuali sono:
 
-### Frontend (Netlify)
+- <code>create-user</code>
+- <code>update-user</code>
+- <code>deactivate-user</code>
+- <code>reactivate-user</code>
+- <code>delete-media</code>
 
-1. Connetti il repo GitHub a Netlify.
-2. Build command: `npm run build`
-3. Publish directory: `dist`
-4. Imposta le 4 variabili d'ambiente `VITE_*` dal pannello Netlify (Site configuration → Environment variables).
-5. File [`netlify.toml`](netlify.toml) da configurare per includere le regole di routing `_redirects` necessarie per il fallback della SPA.
+Gli script operativi locali usano un file <code>.env.scripts.local</code> gitignored e includono seed/test utility per il database e le funzioni.
 
-### Supabase Edge Functions
+## Deploy
 
-Ci sono 5 Edge Functions nella cartella `supabase/functions/`:
-- `delete-media` — Cleanup su Cloudinary quando un utente elimina un contributo.
-- `create-user`, `update-user`, `deactivate-user`, `reactivate-user` — Gestione sicura degli utenti (solo per superadmin).
+### Netlify
 
-Tutte le funzioni sono **single-file** (`index.ts` auto-contenuto) e possono essere deployate facilmente via UI o CLI.
+La configurazione è già versionata in [netlify.toml](netlify.toml):
 
-#### Opzione A — Deploy via Dashboard UI (Consigliata)
-Per ogni funzione:
-1. Vai su Supabase Dashboard > Edge Functions > Deploy a new function.
-2. Nome/slug: usa il nome esatto della cartella (es. `delete-media`).
-3. Disattiva "Verify JWT with legacy secret" (la verifica viene fatta manualmente nel codice).
-4. Copia e incolla il contenuto del file `index.ts` corrispondente nell'editor online.
-5. Fai click su **Deploy**.
+- build: <code>npm run build</code>;
+- directory pubblicata: <code>dist</code>;
+- Node.js 20;
+- fallback SPA verso <code>index.html</code>.
 
-**Secrets richiesti** (da configurare nella Dashboard: Edge Functions → Secrets):
-- `SUPERADMIN_EMAIL`: `admin@diario.internal` (usato dalle funzioni user)
-- `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`: credenziali prese dal pannello Cloudinary (usato da `delete-media`).
-*Nota: `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` sono già esposti di default.*
+### Supabase
 
-#### Opzione B — Deploy via Supabase CLI
-Installa la CLI e autenticati:
-```bash
-supabase login
-supabase link --project-ref <PROJECT_REF>
-supabase secrets set SUPERADMIN_EMAIL=admin@diario.internal CLOUDINARY_CLOUD_NAME=... CLOUDINARY_API_KEY=... CLOUDINARY_API_SECRET=...
-```
-Deploy massivo:
-```bash
-supabase functions deploy
-```
+Il repository conserva migration ed Edge Functions, ma credenziali e service-role key restano fuori dal codice. Per dettagli operativi vedere la documentazione di progetto e il modello di sicurezza.
 
-### Database (Migrations)
+## Struttura
 
-Lo schema completo del database si trova in `supabase/migrations/0001_init.sql`. (I successivi aggiornamenti sono in file numerati in sequenza).
-Per il deploy, copia il contenuto dei file SQL ed eseguili nel **SQL Editor** della Dashboard Supabase in ordine. Lo script è idempotente.
+~~~text
+src/
+├── components/       UI e componenti del diario
+├── hooks/            auth, query e stato applicativo
+├── lib/              Supabase, Cloudinary, date e validazione media
+├── pages/
+│   ├── public/       viste giorno/settimana/mese/anno/categoria
+│   ├── admin/        login e editor educatori
+│   └── superadmin/   gestione utenti e moderazione
+└── router.tsx
 
----
-
-## 📂 Struttura del Progetto
-
-```text
-src/                  # Frontend SPA
-├── components/       # Componenti UI riutilizzabili, layout
-├── hooks/            # Custom hooks (es. useAuth, useContributions, useToast)
-├── lib/              # Utility (Supabase, Cloudinary, formattazione date)
-├── pages/            # Pagine dell'applicazione
-│   ├── public/       # Vista read-only (day/week/month/year)
-│   ├── admin/        # Area riservata agli educatori loggati
-│   └── superadmin/   # Area riservata al gestore (admin@diario.internal)
-└── router.tsx        # Configurazione routing e guards
 supabase/
-├── migrations/       # Schema SQL del database
-└── functions/        # Codice sorgente Edge Functions
-scripts/              # Script utility (seed del DB, testing functions)
-```
+├── migrations/       schema e policy RLS
+└── functions/        Edge Functions Deno
 
----
+docs/
+├── guida-committente.md
+├── credenziali-template.txt
+└── security-model.md
+~~~
 
-## 🔒 Area Superadmin
+## Stato del progetto
 
-L'account di servizio per la gestione è `admin@diario.internal`. 
-La password iniziale viene consegnata separatamente. In caso di smarrimento, è possibile forzare il reset direttamente dalla Dashboard di Supabase:
-`Authentication` → `Users` → Seleziona l'utente → `...` → `Reset password`. *(Nota: la funzione "Send password recovery" non funziona poiché l'email è sintetica).*
-
-**Importante:** Questo account ha solo finalità di amministrazione e moderazione e **non può scrivere contributi**. Le policy RLS (Row Level Security) bloccano la scrittura e l'interfaccia utente nasconde l'opzione di creazione.
+Diario di Bordo è un progetto applicativo reale con frontend, database, autenticazione, autorizzazione e gestione media separati. Il repository privilegia una descrizione verificabile dell'implementazione corrente: eventuali hardening ulteriori vengono trattati come lavoro futuro, non come garanzie implicite.
