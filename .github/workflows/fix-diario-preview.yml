@@ -1,0 +1,42 @@
+name: Fix Diario preview asset
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fix-diario-preview.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix-preview:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Copy working preview from Nexus Portfolio
+        run: |
+          set -euo pipefail
+          curl -L --fail --retry 3 \
+            'https://raw.githubusercontent.com/falker47/Nexus-portfolio/main/assets/projects/diario-di-bordo-preview.webp' \
+            -o docs/diario-di-bordo-preview.webp
+          test -s docs/diario-di-bordo-preview.webp
+
+      - name: Point README to WebP and remove broken asset
+        run: |
+          set -euo pipefail
+          sed -i 's#docs/diario-di-bordo-preview\.svg#docs/diario-di-bordo-preview.webp#g' README.md
+          rm -f docs/diario-di-bordo-preview.svg
+          rm -f .github/workflows/fix-diario-preview.yml
+
+      - name: Commit fix
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'fix: replace corrupted README preview image'
+          git push
